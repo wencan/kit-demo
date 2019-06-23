@@ -54,16 +54,10 @@ func decodeCheckRequest(_ context.Context, grpcReq interface{}) (interface{}, er
 func encodeCheckResponse(_ context.Context, resp interface{}) (interface{}, error) {
 	checkResp := resp.(*protocol.HealthCheckResponse)
 	grpcResp := &proto.HealthCheckResponse{}
-	switch checkResp.Status {
-	case protocol.HealthServiceStatusUnknown:
-		grpcResp.Status = proto.HealthCheckResponse_UNKNOWN
-	case protocol.HealthServiceStatusServing:
-		grpcResp.Status = proto.HealthCheckResponse_SERVING
-	case protocol.HealthServiceStatusNotServing:
-		grpcResp.Status = proto.HealthCheckResponse_NOT_SERVING
-	case protocol.HealthServiceStatusServiceUnknown:
-		grpcResp.Status = proto.HealthCheckResponse_SERVICE_UNKNOWN
-	default:
+
+	var ok bool
+	grpcResp.Status, ok = _HealthServiceStatusCodes[checkResp.Status]
+	if !ok {
 		return nil, grpc.Errorf(codes.Internal, "unkown health status: %d", checkResp.Status)
 	}
 	return grpcResp, nil
