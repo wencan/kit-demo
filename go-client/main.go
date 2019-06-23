@@ -18,7 +18,7 @@ func main() {
 
 	client := proto.NewHealthClient(conn)
 	resp, err := client.Check(context.Background(), &proto.HealthCheckRequest{
-		Service: "",
+		Service: "kit-demo",
 	})
 	if err != nil {
 		log.Fatalln(err)

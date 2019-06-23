@@ -16,7 +16,7 @@ func NewHealthService() *HealthService {
 
 func (healthService *HealthService) Check(ctx context.Context, serviceName string) (protocol.HealthServiceStatus, error) {
 	switch serviceName {
-	case "kit-grpc-demo", "":
+	case "kit-demo", "":
 		return protocol.HealthServiceStatusServing, nil
 	default:
 		return protocol.HealthServiceStatusUnknown, nil
