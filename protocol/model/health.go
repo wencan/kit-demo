@@ -18,7 +18,7 @@ type HealthCheckRequest struct {
 }
 
 type HealthCheckResponse struct {
-	Status HealthServiceStatus
+	Status HealthServiceStatus `json:"-"`
 }
 
 func (resp *HealthCheckResponse) MarshalJSON() ([]byte, error) {
