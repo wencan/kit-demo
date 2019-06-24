@@ -4,8 +4,8 @@ import (
 	"context"
 
 	transport "github.com/go-kit/kit/transport/grpc"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/wencan/kit-demo/go-service/cmd/endpoint"
 	proto "github.com/wencan/kit-demo/protocol/google.golang.org/grpc/health/grpc_health_v1"
@@ -41,7 +41,7 @@ func (server *HealthGRPCServer) Check(ctx context.Context, req *proto.HealthChec
 }
 
 func (server *HealthGRPCServer) Watch(req *proto.HealthCheckRequest, watcher proto.Health_WatchServer) error {
-	return grpc.Errorf(codes.Unimplemented, "kit not suport streaming request and response")
+	return status.Errorf(codes.Unimplemented, "kit not suport streaming request and response")
 }
 
 func decodeCheckRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -58,7 +58,7 @@ func encodeCheckResponse(_ context.Context, resp interface{}) (interface{}, erro
 	var ok bool
 	grpcResp.Status, ok = _HealthServiceStatusCodes[checkResp.Status]
 	if !ok {
-		return nil, grpc.Errorf(codes.Internal, "unkown health status: %d", checkResp.Status)
+		return nil, status.Errorf(codes.Internal, "unkown health status: %d", checkResp.Status)
 	}
 	return grpcResp, nil
 }
