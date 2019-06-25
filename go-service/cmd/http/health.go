@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"net/http"
 
 	transport "github.com/go-kit/kit/transport/http"
@@ -11,16 +10,9 @@ import (
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
 
+// RegisterHealthHTTPHandlers 向http router注册健康检查方法处理器
 func RegisterHealthHTTPHandlers(router *httprouter.Router, service endpoint.HealthService) error {
-	router.Handler(http.MethodGet, "/health", transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeCheckRequest, encodeResponse))
+	decodeHealthCheckRequest := makeRequestDecoder(func() interface{} { return new(protocol.HealthCheckRequest) })
+	router.Handler(http.MethodGet, "/health", transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeHealthCheckRequest, encodeResponse))
 	return nil
-}
-
-func decodeCheckRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	req := &protocol.HealthCheckRequest{}
-	err := decodeRequest(ctx, r, req)
-	if err != nil {
-		return nil, err
-	}
-	return req, nil
 }

@@ -13,11 +13,29 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/go-playground/form"
+	"gopkg.in/go-playground/validator.v9"
 )
 
-// decodeRequest 从http请求解出请求参数结构体对象，支持查询参数、表单
+var validate *validator.Validate
+
+func init() {
+	validate = validator.New()
+}
+
+// makeRequestDecoder 构建一个请求对象的解码器（含参数检查逻辑）。需要提供一个请求对象构建函数
+func makeRequestDecoder(New func() interface{}) func(context.Context, *http.Request) (interface{}, error) {
+	pool := sync.Pool{New: New}
+	return func(ctx context.Context, r *http.Request) (interface{}, error) {
+		request := pool.New()
+		err := decodeRequest(ctx, r, request)
+		return request, err
+	}
+}
+
+// decodeRequest 从http请求解出请求参数结构体对象，并检查参数。支持查询参数、表单、json实体
 func decodeRequest(_ context.Context, r *http.Request, request interface{}) error {
 	switch r.Method {
 	case http.MethodGet:
@@ -35,7 +53,7 @@ func decodeRequest(_ context.Context, r *http.Request, request interface{}) erro
 		case "application/x-www-form-urlencoded", "multipart/form-data":
 			err := r.ParseForm()
 			if err != nil {
-				return nil
+				return err
 			}
 			err = form.NewDecoder().Decode(request, r.Form)
 			if err != nil {
@@ -55,10 +73,16 @@ func decodeRequest(_ context.Context, r *http.Request, request interface{}) erro
 		}
 	default:
 	}
+
+	// 参数检查
+	err := validate.Struct(request)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-// encodeResponse 将响应编码响应
+// encodeResponse 将响应编码作http响应实体
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	return json.NewEncoder(w).Encode(response)

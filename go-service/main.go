@@ -46,7 +46,7 @@ func runGRPCServer(ctx context.Context, network, addr string, healthService *ser
 	return nil
 }
 
-func runHTTPServer(ctx context.Context, addr string, healthService *service.HealthService) error {
+func runHTTPServer(ctx context.Context, addr string, healthService *service.HealthService, claculatorService *service.CalculatorService) error {
 	select {
 	case <-ctx.Done():
 		return nil
@@ -55,6 +55,7 @@ func runHTTPServer(ctx context.Context, addr string, healthService *service.Heal
 
 	router := httprouter.New()
 	httpsvc.RegisterHealthHTTPHandlers(router, healthService)
+	httpsvc.RegisterCalculatorHTTPHandlers(router, claculatorService)
 
 	s := http.Server{
 		Addr:    addr,
@@ -76,6 +77,7 @@ func runHTTPServer(ctx context.Context, addr string, healthService *service.Heal
 
 func main() {
 	healthService := service.NewHealthService()
+	claculatorService := service.NewCalculatorService()
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -96,7 +98,7 @@ func main() {
 		time.Sleep(5)
 		defer wg.Done()
 		defer cancel()
-		err := runHTTPServer(ctx, "127.0.0.1:6061", healthService)
+		err := runHTTPServer(ctx, "127.0.0.1:6061", healthService, claculatorService)
 		if err != nil {
 			cancel()
 		}

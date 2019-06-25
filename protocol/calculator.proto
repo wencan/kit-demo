@@ -1,0 +1,48 @@
+
+syntax = "proto3";
+
+package grpc.calculator.v1;
+
+option csharp_namespace = "Grpc.Calculator.V1";
+option go_package = "github.com/wencan/kit-demo/calculator/grpc_calculator_v1";
+option java_multiple_files = true;
+option java_outer_classname = "CalculatorProto";
+option java_package = "io.grpc.calculator.v1";
+
+message CalculatorAddRequest {
+  int32 a = 1;
+  int32 b = 2;
+}
+
+message CalculatorSubRequest {
+  int32 c = 1;
+  int32 d = 2;
+}
+
+message CalculatorMulRequest {
+  int32 e = 1;
+  int32 f = 2;
+}
+
+message CalculatorDivRequest {
+  int32 m = 1;
+  int32 n = 2;
+}
+
+message CalculatorInt32Response {
+  int32 result = 1;
+}
+
+message CalculatorFloatResponse {
+  float result = 1;
+}
+
+service Calculator {
+  rpc Add(CalculatorAddRequest) returns (stream CalculatorInt32Response);
+
+  rpc Sub(CalculatorSubRequest) returns (stream CalculatorInt32Response);
+
+  rpc Mul(CalculatorMulRequest) returns (stream CalculatorInt32Response);
+
+  rpc Div(CalculatorDivRequest) returns (stream CalculatorFloatResponse);
+}
