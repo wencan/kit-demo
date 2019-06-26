@@ -1,5 +1,11 @@
 package http
 
+/*
+ * 健康检查http服务接口
+ * wencan
+ * 2019-06-23
+ */
+
 import (
 	"net/http"
 

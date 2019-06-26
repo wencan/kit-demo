@@ -1,19 +1,20 @@
 package http
 
-import (
-	"net/http"
-
-	transport "github.com/go-kit/kit/transport/http"
-	"github.com/julienschmidt/httprouter"
-	"github.com/wencan/kit-demo/go-service/cmd/endpoint"
-	protocol "github.com/wencan/kit-demo/protocol/model"
-)
-
 /*
  * 计算器http服务接口
  * wencan
  * 2019-06-25
  */
+
+import (
+	"net/http"
+
+	transport "github.com/go-kit/kit/transport/http"
+	"github.com/julienschmidt/httprouter"
+
+	"github.com/wencan/kit-demo/go-service/cmd/endpoint"
+	protocol "github.com/wencan/kit-demo/protocol/model"
+)
 
 // RegisterCalculatorHTTPHandlers 向http router注册计算器方法处理器
 func RegisterCalculatorHTTPHandlers(router *httprouter.Router, service endpoint.CalculatorService) error {

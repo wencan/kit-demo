@@ -12,6 +12,7 @@ import (
 	"context"
 
 	"github.com/go-kit/kit/endpoint"
+
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
 
