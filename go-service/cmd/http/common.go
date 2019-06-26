@@ -13,7 +13,6 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"sync"
 
 	"github.com/go-playground/form"
 	"gopkg.in/go-playground/validator.v9"
@@ -27,9 +26,8 @@ func init() {
 
 // makeRequestDecoder 构建一个请求对象的解码器（含参数检查逻辑）。需要提供一个请求对象构建函数
 func makeRequestDecoder(New func() interface{}) func(context.Context, *http.Request) (interface{}, error) {
-	pool := sync.Pool{New: New}
 	return func(ctx context.Context, r *http.Request) (interface{}, error) {
-		request := pool.New()
+		request := New() // 这里复用对象，可能造成污染
 		err := decodeRequest(ctx, r, request)
 		return request, err
 	}
