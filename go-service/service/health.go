@@ -25,8 +25,10 @@ func NewHealthService() *HealthService {
 // Check 检查指定服务的健康状况
 func (healthService *HealthService) Check(ctx context.Context, serviceName string) (protocol.HealthServiceStatus, error) {
 	switch serviceName {
-	case "kit-demo", "":
+	case "kit-demo":
 		return protocol.HealthServiceStatusServing, nil
+	case "panic":
+		panic("BOOM")
 	default:
 		return protocol.HealthServiceStatusUnknown, nil
 	}
