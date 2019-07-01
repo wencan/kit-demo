@@ -35,6 +35,8 @@ type HealthGRPCServer struct {
 
 // NewHealthGRPCServer 创建健康检查GRPC服务
 func NewHealthGRPCServer(service endpoint.HealthService) *HealthGRPCServer {
+	decodeCheckRequest := makeRequestDecoder(func() interface{} { return new(protocol.HealthCheckRequest) })
+	encodeCheckResponse := makeResponseEncoder(func() interface{} { return new(proto.HealthCheckResponse) })
 	return &HealthGRPCServer{
 		CheckServer: transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeCheckRequest, encodeCheckResponse),
 	}
@@ -52,25 +54,4 @@ func (server *HealthGRPCServer) Check(ctx context.Context, req *proto.HealthChec
 // Watch 观察指定服务的健康状态。未实现
 func (server *HealthGRPCServer) Watch(req *proto.HealthCheckRequest, watcher proto.Health_WatchServer) error {
 	return status.Errorf(codes.Unimplemented, "kit not suport streaming request and response")
-}
-
-// decodeCheckRequest 将健康检查GRPC请求解码为通用请求
-func decodeCheckRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
-	checkReq := grpcReq.(*proto.HealthCheckRequest)
-	return &protocol.HealthCheckRequest{
-		Service: checkReq.Service,
-	}, nil
-}
-
-// decodeCheckRequest 将健康检查通用响应解码为GRPC响应
-func encodeCheckResponse(_ context.Context, resp interface{}) (interface{}, error) {
-	checkResp := resp.(*protocol.HealthCheckResponse)
-	grpcResp := &proto.HealthCheckResponse{}
-
-	var ok bool
-	grpcResp.Status, ok = _HealthServiceStatusCodes[checkResp.Status]
-	if !ok {
-		return nil, status.Errorf(codes.Internal, "unkown health status: %d", checkResp.Status)
-	}
-	return grpcResp, nil
 }
