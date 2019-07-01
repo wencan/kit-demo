@@ -38,11 +38,11 @@ message CalculatorFloatResponse {
 }
 
 service Calculator {
-  rpc Add(CalculatorAddRequest) returns (stream CalculatorInt32Response);
+  rpc Add(CalculatorAddRequest) returns (CalculatorInt32Response);
 
-  rpc Sub(CalculatorSubRequest) returns (stream CalculatorInt32Response);
+  rpc Sub(CalculatorSubRequest) returns (CalculatorInt32Response);
 
-  rpc Mul(CalculatorMulRequest) returns (stream CalculatorInt32Response);
+  rpc Mul(CalculatorMulRequest) returns (CalculatorInt32Response);
 
-  rpc Div(CalculatorDivRequest) returns (stream CalculatorFloatResponse);
+  rpc Div(CalculatorDivRequest) returns (CalculatorFloatResponse);
 }

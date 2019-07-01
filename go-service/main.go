@@ -18,14 +18,16 @@ import (
 	http_zap "github.com/wencan/multihandler/zap"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	grpcsvc "github.com/wencan/kit-demo/go-service/cmd/grpc"
 	httpsvc "github.com/wencan/kit-demo/go-service/cmd/http"
 	service "github.com/wencan/kit-demo/go-service/service"
-	proto "github.com/wencan/kit-demo/protocol/google.golang.org/grpc/health/grpc_health_v1"
+	calculator_proto "github.com/wencan/kit-demo/protocol/github.com/wencan/kit-demo/calculator/grpc_calculator_v1"
+	health_proto "github.com/wencan/kit-demo/protocol/google.golang.org/grpc/health/grpc_health_v1"
 )
 
-func runGRPCServer(ctx context.Context, network, addr string, healthService *service.HealthService, logger *zap.Logger) error {
+func runGRPCServer(ctx context.Context, network, addr string, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) error {
 	select {
 	case <-ctx.Done():
 		return nil
@@ -40,7 +42,11 @@ func runGRPCServer(ctx context.Context, network, addr string, healthService *ser
 
 	// 拦截器要注意顺序
 	s := grpc.NewServer(grpc_middleware.WithUnaryServerChain(grpc_zap.UnaryServerInterceptor(logger), grpc_recovery.UnaryServerInterceptor()))
-	proto.RegisterHealthServer(s, grpcsvc.NewHealthGRPCServer(healthService))
+	health_proto.RegisterHealthServer(s, grpcsvc.NewHealthGRPCServer(healthService))
+	calculator_proto.RegisterCalculatorServer(s, grpcsvc.NewCalculatorGRPCServer(claculatorService))
+
+	// 服务反射
+	reflection.Register(s)
 
 	go func() {
 		<-ctx.Done()
@@ -92,7 +98,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	logConfig := zap.NewProductionConfig()
+	logConfig := zap.NewDevelopmentConfig()
 	logConfig.EncoderConfig.EncodeTime = func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 		enc.AppendString(t.Format("2006-01-02T15:04:05.000000Z07:00")) // ISO 8601
 	}
@@ -108,7 +114,7 @@ func main() {
 	go func() {
 		defer wg.Done()
 		defer cancel()
-		err := runGRPCServer(ctx, "tcp", "127.0.0.1:5051", healthService, logger)
+		err := runGRPCServer(ctx, "tcp", "127.0.0.1:5051", healthService, claculatorService, logger)
 		if err != nil {
 			cancel()
 		}

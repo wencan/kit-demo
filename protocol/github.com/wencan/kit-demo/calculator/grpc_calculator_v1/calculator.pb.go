@@ -302,27 +302,27 @@ func init() {
 func init() { proto.RegisterFile("calculator.proto", fileDescriptor_c686ea360062a8cf) }
 
 var fileDescriptor_c686ea360062a8cf = []byte{
-	// 320 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0xd3, 0x4d, 0x4b, 0xc3, 0x30,
-	0x18, 0x07, 0x70, 0xb2, 0xe1, 0x0e, 0x41, 0x50, 0x82, 0x2f, 0xc3, 0x93, 0xec, 0x34, 0x10, 0xdb,
-	0x75, 0xbb, 0x78, 0xdd, 0x1c, 0x8a, 0x87, 0xc1, 0xd8, 0xc0, 0x83, 0x07, 0x47, 0xde, 0x36, 0x8b,
-	0x69, 0x32, 0xdb, 0xa4, 0xe2, 0x77, 0xf0, 0x93, 0xf8, 0x29, 0x25, 0xba, 0x98, 0x06, 0xa7, 0x85,
-	0x1d, 0xff, 0xa1, 0xbf, 0x7f, 0x43, 0x1e, 0x1e, 0x78, 0x48, 0xb1, 0xa0, 0x46, 0x60, 0xad, 0xf2,
-	0x68, 0x9d, 0x2b, 0xad, 0x10, 0x5a, 0xe5, 0x6b, 0x1a, 0x55, 0x8e, 0xcb, 0xa4, 0xd3, 0x87, 0x47,
-	0xd7, 0x3f, 0x07, 0x43, 0xc6, 0x66, 0xfc, 0xc5, 0xf0, 0x42, 0xa3, 0x7d, 0x08, 0x70, 0x1b, 0x9c,
-	0x83, 0xee, 0xde, 0x0c, 0x60, 0x9b, 0x48, 0xbb, 0xf1, 0x9d, 0x48, 0x68, 0xe6, 0x86, 0x54, 0x0c,
-	0x75, 0x86, 0xda, 0xc4, 0x9c, 0x61, 0xa1, 0x99, 0x18, 0x51, 0x31, 0xdc, 0x19, 0x6e, 0xd3, 0xd2,
-	0x99, 0x65, 0x68, 0xc6, 0x69, 0x59, 0x31, 0x99, 0x33, 0x99, 0x4d, 0xd2, 0x19, 0xd9, 0x49, 0xe0,
-	0xa9, 0x37, 0x77, 0x52, 0x0f, 0xfa, 0x33, 0x5e, 0xac, 0x95, 0x2c, 0x38, 0x3a, 0x81, 0xad, 0x9c,
-	0x17, 0x46, 0xe8, 0x8d, 0xdd, 0xa4, 0x90, 0xdc, 0x08, 0x85, 0xf5, 0x1f, 0xa4, 0xe1, 0x48, 0xff,
-	0xbd, 0x09, 0xa1, 0x37, 0xe8, 0x11, 0x36, 0x87, 0x8c, 0xa1, 0x6e, 0xf4, 0xfb, 0x81, 0xa3, 0x6d,
-	0xaf, 0x7b, 0x76, 0xf1, 0xff, 0x97, 0xc1, 0xbd, 0x7b, 0xc0, 0xf6, 0xcf, 0x0d, 0xa9, 0xeb, 0xf7,
-	0x93, 0xd8, 0xa1, 0x7f, 0x62, 0x44, 0x5d, 0xbf, 0x9f, 0xda, 0x0e, 0xfd, 0xe3, 0xb4, 0xac, 0xeb,
-	0xf7, 0x13, 0xae, 0xeb, 0x0f, 0x86, 0xd4, 0x03, 0xa3, 0x37, 0x78, 0x9c, 0xaa, 0x2d, 0x64, 0x74,
-	0xe0, 0xcd, 0xd4, 0xae, 0xc0, 0x14, 0x3c, 0x5c, 0xad, 0x52, 0xfd, 0x64, 0x48, 0x44, 0x55, 0x16,
-	0xbf, 0x72, 0x49, 0xb1, 0x8c, 0x9f, 0x53, 0x7d, 0xc9, 0x78, 0xa6, 0x62, 0x8f, 0x63, 0x5b, 0xb6,
-	0xf0, 0x79, 0x51, 0x26, 0x1f, 0x0d, 0x74, 0x6b, 0xff, 0xe0, 0x2b, 0xa3, 0xfb, 0x84, 0xb4, 0xbe,
-	0x56, 0x6b, 0xf0, 0x19, 0x00, 0x00, 0xff, 0xff, 0xca, 0x13, 0x60, 0x4f, 0x6e, 0x03, 0x00, 0x00,
+	// 318 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0xd3, 0x4d, 0x4b, 0xfb, 0x30,
+	0x1c, 0x07, 0x70, 0xba, 0xf1, 0xdf, 0x21, 0xfc, 0x41, 0x09, 0x3e, 0x0c, 0x4f, 0xb2, 0xd3, 0x40,
+	0x4c, 0xe9, 0x76, 0xf1, 0xba, 0x39, 0x14, 0x0f, 0x83, 0xb1, 0x81, 0x07, 0x19, 0x8c, 0x3c, 0x6d,
+	0x16, 0xd3, 0xa4, 0xb6, 0x49, 0xc5, 0xbb, 0xaf, 0xc6, 0x57, 0x29, 0xd1, 0xc5, 0x34, 0x38, 0x2d,
+	0x3b, 0x7e, 0x43, 0x3f, 0xdf, 0x96, 0xdf, 0xaf, 0x01, 0x87, 0x14, 0x0b, 0x6a, 0x04, 0xd6, 0xaa,
+	0x40, 0x79, 0xa1, 0xb4, 0x82, 0x70, 0x53, 0xe4, 0x14, 0xd5, 0x8e, 0xab, 0xa4, 0x37, 0x00, 0x47,
+	0xd7, 0xdf, 0x07, 0x23, 0xc6, 0xe6, 0xfc, 0xd9, 0xf0, 0x52, 0xc3, 0xff, 0x20, 0xc2, 0xdd, 0xe8,
+	0x3c, 0xea, 0xff, 0x9b, 0x47, 0xd8, 0x26, 0xd2, 0x6d, 0x7d, 0x25, 0x12, 0x9a, 0x85, 0x21, 0x35,
+	0x43, 0x9d, 0xa1, 0x36, 0x31, 0x67, 0x58, 0x68, 0xa6, 0x46, 0xd4, 0x0c, 0x77, 0x86, 0xdb, 0xb4,
+	0x76, 0x66, 0x1d, 0x9a, 0x49, 0x5a, 0xd5, 0x4c, 0xe6, 0x4c, 0x66, 0x93, 0x74, 0x46, 0xf6, 0x12,
+	0x70, 0xea, 0xcd, 0x9d, 0xd4, 0xc3, 0xc1, 0x9c, 0x97, 0xb9, 0x92, 0x25, 0x87, 0x27, 0xa0, 0x53,
+	0xf0, 0xd2, 0x08, 0xbd, 0xb5, 0xdb, 0x14, 0x92, 0x1b, 0xa1, 0xb0, 0xfe, 0x85, 0xb4, 0x1c, 0x19,
+	0xbc, 0xb5, 0x01, 0xf0, 0x06, 0x2e, 0x41, 0x7b, 0xc4, 0x18, 0xec, 0xa3, 0x9f, 0x03, 0x46, 0xbb,
+	0xa6, 0x7b, 0x76, 0xf1, 0xf7, 0x93, 0xe1, 0x77, 0x2f, 0x41, 0x7b, 0x61, 0x48, 0x53, 0xbb, 0xdf,
+	0xc3, 0xde, 0xed, 0x53, 0x23, 0x9a, 0xda, 0xfd, 0xc6, 0xf6, 0x6e, 0x9f, 0xa4, 0x55, 0x53, 0xbb,
+	0xdf, 0x6d, 0x53, 0x7b, 0xb0, 0x9e, 0xf1, 0x2b, 0x38, 0x4e, 0xd5, 0x0e, 0x30, 0x3e, 0xf0, 0x62,
+	0x66, 0x7f, 0xfd, 0x59, 0xf4, 0x70, 0xb5, 0x49, 0xf5, 0xa3, 0x21, 0x88, 0xaa, 0x2c, 0x7e, 0xe1,
+	0x92, 0x62, 0x19, 0x3f, 0xa5, 0xfa, 0x92, 0xf1, 0x4c, 0xc5, 0x1e, 0xc7, 0xb6, 0x6c, 0xe5, 0xf3,
+	0xaa, 0x4a, 0xde, 0x5b, 0xf0, 0xd6, 0xbe, 0xc1, 0x57, 0xa2, 0xfb, 0x84, 0x74, 0x3e, 0xaf, 0xd4,
+	0xf0, 0x23, 0x00, 0x00, 0xff, 0xff, 0x11, 0xc6, 0xeb, 0x05, 0x66, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -337,10 +337,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CalculatorClient interface {
-	Add(ctx context.Context, in *CalculatorAddRequest, opts ...grpc.CallOption) (Calculator_AddClient, error)
-	Sub(ctx context.Context, in *CalculatorSubRequest, opts ...grpc.CallOption) (Calculator_SubClient, error)
-	Mul(ctx context.Context, in *CalculatorMulRequest, opts ...grpc.CallOption) (Calculator_MulClient, error)
-	Div(ctx context.Context, in *CalculatorDivRequest, opts ...grpc.CallOption) (Calculator_DivClient, error)
+	Add(ctx context.Context, in *CalculatorAddRequest, opts ...grpc.CallOption) (*CalculatorInt32Response, error)
+	Sub(ctx context.Context, in *CalculatorSubRequest, opts ...grpc.CallOption) (*CalculatorInt32Response, error)
+	Mul(ctx context.Context, in *CalculatorMulRequest, opts ...grpc.CallOption) (*CalculatorInt32Response, error)
+	Div(ctx context.Context, in *CalculatorDivRequest, opts ...grpc.CallOption) (*CalculatorFloatResponse, error)
 }
 
 type calculatorClient struct {
@@ -351,272 +351,164 @@ func NewCalculatorClient(cc *grpc.ClientConn) CalculatorClient {
 	return &calculatorClient{cc}
 }
 
-func (c *calculatorClient) Add(ctx context.Context, in *CalculatorAddRequest, opts ...grpc.CallOption) (Calculator_AddClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Calculator_serviceDesc.Streams[0], "/grpc.calculator.v1.Calculator/Add", opts...)
+func (c *calculatorClient) Add(ctx context.Context, in *CalculatorAddRequest, opts ...grpc.CallOption) (*CalculatorInt32Response, error) {
+	out := new(CalculatorInt32Response)
+	err := c.cc.Invoke(ctx, "/grpc.calculator.v1.Calculator/Add", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &calculatorAddClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-type Calculator_AddClient interface {
-	Recv() (*CalculatorInt32Response, error)
-	grpc.ClientStream
-}
-
-type calculatorAddClient struct {
-	grpc.ClientStream
-}
-
-func (x *calculatorAddClient) Recv() (*CalculatorInt32Response, error) {
-	m := new(CalculatorInt32Response)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *calculatorClient) Sub(ctx context.Context, in *CalculatorSubRequest, opts ...grpc.CallOption) (Calculator_SubClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Calculator_serviceDesc.Streams[1], "/grpc.calculator.v1.Calculator/Sub", opts...)
+func (c *calculatorClient) Sub(ctx context.Context, in *CalculatorSubRequest, opts ...grpc.CallOption) (*CalculatorInt32Response, error) {
+	out := new(CalculatorInt32Response)
+	err := c.cc.Invoke(ctx, "/grpc.calculator.v1.Calculator/Sub", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &calculatorSubClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-type Calculator_SubClient interface {
-	Recv() (*CalculatorInt32Response, error)
-	grpc.ClientStream
-}
-
-type calculatorSubClient struct {
-	grpc.ClientStream
-}
-
-func (x *calculatorSubClient) Recv() (*CalculatorInt32Response, error) {
-	m := new(CalculatorInt32Response)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *calculatorClient) Mul(ctx context.Context, in *CalculatorMulRequest, opts ...grpc.CallOption) (Calculator_MulClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Calculator_serviceDesc.Streams[2], "/grpc.calculator.v1.Calculator/Mul", opts...)
+func (c *calculatorClient) Mul(ctx context.Context, in *CalculatorMulRequest, opts ...grpc.CallOption) (*CalculatorInt32Response, error) {
+	out := new(CalculatorInt32Response)
+	err := c.cc.Invoke(ctx, "/grpc.calculator.v1.Calculator/Mul", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &calculatorMulClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-type Calculator_MulClient interface {
-	Recv() (*CalculatorInt32Response, error)
-	grpc.ClientStream
-}
-
-type calculatorMulClient struct {
-	grpc.ClientStream
-}
-
-func (x *calculatorMulClient) Recv() (*CalculatorInt32Response, error) {
-	m := new(CalculatorInt32Response)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *calculatorClient) Div(ctx context.Context, in *CalculatorDivRequest, opts ...grpc.CallOption) (Calculator_DivClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Calculator_serviceDesc.Streams[3], "/grpc.calculator.v1.Calculator/Div", opts...)
+func (c *calculatorClient) Div(ctx context.Context, in *CalculatorDivRequest, opts ...grpc.CallOption) (*CalculatorFloatResponse, error) {
+	out := new(CalculatorFloatResponse)
+	err := c.cc.Invoke(ctx, "/grpc.calculator.v1.Calculator/Div", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &calculatorDivClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type Calculator_DivClient interface {
-	Recv() (*CalculatorFloatResponse, error)
-	grpc.ClientStream
-}
-
-type calculatorDivClient struct {
-	grpc.ClientStream
-}
-
-func (x *calculatorDivClient) Recv() (*CalculatorFloatResponse, error) {
-	m := new(CalculatorFloatResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // CalculatorServer is the server API for Calculator service.
 type CalculatorServer interface {
-	Add(*CalculatorAddRequest, Calculator_AddServer) error
-	Sub(*CalculatorSubRequest, Calculator_SubServer) error
-	Mul(*CalculatorMulRequest, Calculator_MulServer) error
-	Div(*CalculatorDivRequest, Calculator_DivServer) error
+	Add(context.Context, *CalculatorAddRequest) (*CalculatorInt32Response, error)
+	Sub(context.Context, *CalculatorSubRequest) (*CalculatorInt32Response, error)
+	Mul(context.Context, *CalculatorMulRequest) (*CalculatorInt32Response, error)
+	Div(context.Context, *CalculatorDivRequest) (*CalculatorFloatResponse, error)
 }
 
 // UnimplementedCalculatorServer can be embedded to have forward compatible implementations.
 type UnimplementedCalculatorServer struct {
 }
 
-func (*UnimplementedCalculatorServer) Add(req *CalculatorAddRequest, srv Calculator_AddServer) error {
-	return status.Errorf(codes.Unimplemented, "method Add not implemented")
+func (*UnimplementedCalculatorServer) Add(ctx context.Context, req *CalculatorAddRequest) (*CalculatorInt32Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
-func (*UnimplementedCalculatorServer) Sub(req *CalculatorSubRequest, srv Calculator_SubServer) error {
-	return status.Errorf(codes.Unimplemented, "method Sub not implemented")
+func (*UnimplementedCalculatorServer) Sub(ctx context.Context, req *CalculatorSubRequest) (*CalculatorInt32Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Sub not implemented")
 }
-func (*UnimplementedCalculatorServer) Mul(req *CalculatorMulRequest, srv Calculator_MulServer) error {
-	return status.Errorf(codes.Unimplemented, "method Mul not implemented")
+func (*UnimplementedCalculatorServer) Mul(ctx context.Context, req *CalculatorMulRequest) (*CalculatorInt32Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Mul not implemented")
 }
-func (*UnimplementedCalculatorServer) Div(req *CalculatorDivRequest, srv Calculator_DivServer) error {
-	return status.Errorf(codes.Unimplemented, "method Div not implemented")
+func (*UnimplementedCalculatorServer) Div(ctx context.Context, req *CalculatorDivRequest) (*CalculatorFloatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Div not implemented")
 }
 
 func RegisterCalculatorServer(s *grpc.Server, srv CalculatorServer) {
 	s.RegisterService(&_Calculator_serviceDesc, srv)
 }
 
-func _Calculator_Add_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CalculatorAddRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _Calculator_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CalculatorAddRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(CalculatorServer).Add(m, &calculatorAddServer{stream})
-}
-
-type Calculator_AddServer interface {
-	Send(*CalculatorInt32Response) error
-	grpc.ServerStream
-}
-
-type calculatorAddServer struct {
-	grpc.ServerStream
-}
-
-func (x *calculatorAddServer) Send(m *CalculatorInt32Response) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _Calculator_Sub_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CalculatorSubRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+	if interceptor == nil {
+		return srv.(CalculatorServer).Add(ctx, in)
 	}
-	return srv.(CalculatorServer).Sub(m, &calculatorSubServer{stream})
-}
-
-type Calculator_SubServer interface {
-	Send(*CalculatorInt32Response) error
-	grpc.ServerStream
-}
-
-type calculatorSubServer struct {
-	grpc.ServerStream
-}
-
-func (x *calculatorSubServer) Send(m *CalculatorInt32Response) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _Calculator_Mul_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CalculatorMulRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.calculator.v1.Calculator/Add",
 	}
-	return srv.(CalculatorServer).Mul(m, &calculatorMulServer{stream})
-}
-
-type Calculator_MulServer interface {
-	Send(*CalculatorInt32Response) error
-	grpc.ServerStream
-}
-
-type calculatorMulServer struct {
-	grpc.ServerStream
-}
-
-func (x *calculatorMulServer) Send(m *CalculatorInt32Response) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _Calculator_Div_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CalculatorDivRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CalculatorServer).Add(ctx, req.(*CalculatorAddRequest))
 	}
-	return srv.(CalculatorServer).Div(m, &calculatorDivServer{stream})
+	return interceptor(ctx, in, info, handler)
 }
 
-type Calculator_DivServer interface {
-	Send(*CalculatorFloatResponse) error
-	grpc.ServerStream
+func _Calculator_Sub_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CalculatorSubRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CalculatorServer).Sub(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.calculator.v1.Calculator/Sub",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CalculatorServer).Sub(ctx, req.(*CalculatorSubRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-type calculatorDivServer struct {
-	grpc.ServerStream
+func _Calculator_Mul_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CalculatorMulRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CalculatorServer).Mul(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.calculator.v1.Calculator/Mul",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CalculatorServer).Mul(ctx, req.(*CalculatorMulRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func (x *calculatorDivServer) Send(m *CalculatorFloatResponse) error {
-	return x.ServerStream.SendMsg(m)
+func _Calculator_Div_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CalculatorDivRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CalculatorServer).Div(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.calculator.v1.Calculator/Div",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CalculatorServer).Div(ctx, req.(*CalculatorDivRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _Calculator_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.calculator.v1.Calculator",
 	HandlerType: (*CalculatorServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Add",
-			Handler:       _Calculator_Add_Handler,
-			ServerStreams: true,
+			MethodName: "Add",
+			Handler:    _Calculator_Add_Handler,
 		},
 		{
-			StreamName:    "Sub",
-			Handler:       _Calculator_Sub_Handler,
-			ServerStreams: true,
+			MethodName: "Sub",
+			Handler:    _Calculator_Sub_Handler,
 		},
 		{
-			StreamName:    "Mul",
-			Handler:       _Calculator_Mul_Handler,
-			ServerStreams: true,
+			MethodName: "Mul",
+			Handler:    _Calculator_Mul_Handler,
 		},
 		{
-			StreamName:    "Div",
-			Handler:       _Calculator_Div_Handler,
-			ServerStreams: true,
+			MethodName: "Div",
+			Handler:    _Calculator_Div_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "calculator.proto",
 }
