@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/form"
+	"github.com/wencan/errmsg"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -39,6 +40,7 @@ func decodeRequest(_ context.Context, r *http.Request, request interface{}) erro
 	case http.MethodGet:
 		err := form.NewDecoder().Decode(request, r.URL.Query())
 		if err != nil {
+			err = errmsg.WrapError(errmsg.ErrInvalidArgument, err)
 			return err
 		}
 	case http.MethodPost, http.MethodPut, http.MethodPatch:
@@ -55,6 +57,7 @@ func decodeRequest(_ context.Context, r *http.Request, request interface{}) erro
 			}
 			err = form.NewDecoder().Decode(request, r.Form)
 			if err != nil {
+				err = errmsg.WrapError(errmsg.ErrInvalidArgument, err)
 				return err
 			}
 		case "application/json":
@@ -65,6 +68,7 @@ func decodeRequest(_ context.Context, r *http.Request, request interface{}) erro
 			defer r.Body.Close()
 			err := json.NewDecoder(r.Body).Decode(request)
 			if err != nil {
+				err = errmsg.WrapError(errmsg.ErrInvalidArgument, err)
 				return err
 			}
 		default:
@@ -75,6 +79,7 @@ func decodeRequest(_ context.Context, r *http.Request, request interface{}) erro
 	// 参数检查
 	err := validate.Struct(request)
 	if err != nil {
+		err = errmsg.WrapError(errmsg.ErrInvalidArgument, err)
 		return err
 	}
 	return nil

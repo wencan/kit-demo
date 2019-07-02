@@ -41,7 +41,12 @@ func runGRPCServer(ctx context.Context, network, addr string, healthService *ser
 	}
 
 	// 拦截器要注意顺序
-	s := grpc.NewServer(grpc_middleware.WithUnaryServerChain(grpc_zap.UnaryServerInterceptor(logger), grpc_recovery.UnaryServerInterceptor()))
+	interceptors := []grpc.UnaryServerInterceptor{
+		grpc_zap.UnaryServerInterceptor(logger), // 日志
+		grpc_recovery.UnaryServerInterceptor(),  // recovery panic
+		grpcsvc.UnaryErrorInterceptor,           // 错误处理
+	}
+	s := grpc.NewServer(grpc_middleware.WithUnaryServerChain(interceptors...))
 	health_proto.RegisterHealthServer(s, grpcsvc.NewHealthGRPCServer(healthService))
 	calculator_proto.RegisterCalculatorServer(s, grpcsvc.NewCalculatorGRPCServer(claculatorService))
 
@@ -98,7 +103,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	logConfig := zap.NewDevelopmentConfig()
+	logConfig := zap.NewProductionConfig()
 	logConfig.EncoderConfig.EncodeTime = func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 		enc.AppendString(t.Format("2006-01-02T15:04:05.000000Z07:00")) // ISO 8601
 	}

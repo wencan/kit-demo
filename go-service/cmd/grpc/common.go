@@ -13,6 +13,7 @@ import (
 	"context"
 
 	"github.com/wencan/copier"
+	"github.com/wencan/errmsg"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -30,12 +31,17 @@ func makeRequestDecoder(New func() interface{}) func(context.Context, interface{
 	return func(_ context.Context, grpcReq interface{}) (interface{}, error) {
 		err := Decoder.Copy(req, grpcReq)
 		if err != nil {
+			err = errmsg.WrapError(errmsg.ErrInvalidArgument, err)
 			return nil, err
 		}
 
 		// 参数检查
 		err = validate.Struct(req)
-		return req, err
+		if err != nil {
+			err = errmsg.WrapError(errmsg.ErrInvalidArgument, err)
+			return nil, err
+		}
+		return req, nil
 	}
 }
 
@@ -44,6 +50,10 @@ func makeResponseEncoder(New func() interface{}) func(context.Context, interface
 	grpcResp := New()
 	return func(_ context.Context, resp interface{}) (interface{}, error) {
 		err := Encoder.Copy(grpcResp, resp)
+		if err != nil {
+			// unknown error ...
+			return nil, err
+		}
 		return grpcResp, err
 	}
 }
