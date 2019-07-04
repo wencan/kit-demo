@@ -15,7 +15,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/wencan/middlewares"
-	http_zap "github.com/wencan/middlewares/zap"
+	http_zap "github.com/wencan/middlewares/logging/zap"
 	"go.uber.org/zap"
 
 	httpsvc "github.com/wencan/kit-demo/go-service/cmd/http"
