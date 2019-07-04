@@ -17,17 +17,17 @@ import (
 )
 
 // RegisterCalculatorHTTPHandlers 向http router注册计算器方法处理器
-func RegisterCalculatorHTTPHandlers(router *httprouter.Router, service endpoint.CalculatorService) error {
+func RegisterCalculatorHTTPHandlers(router *httprouter.Router, service endpoint.CalculatorService, options ...transport.ServerOption) error {
 	decodeCalculatorAddRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorAddRequest) })
-	router.Handler(http.MethodPost, "/calculator/add", transport.NewServer(endpoint.NewCalculatorAddEndpoint(service), decodeCalculatorAddRequest, encodeResponse))
+	router.Handler(http.MethodPost, "/calculator/add", transport.NewServer(endpoint.NewCalculatorAddEndpoint(service), decodeCalculatorAddRequest, encodeResponse, options...))
 
 	decodeCalculatorSubRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorSubRequest) })
-	router.Handler(http.MethodPost, "/calculator/sub", transport.NewServer(endpoint.NewCalculatorSubEndpoint(service), decodeCalculatorSubRequest, encodeResponse))
+	router.Handler(http.MethodPost, "/calculator/sub", transport.NewServer(endpoint.NewCalculatorSubEndpoint(service), decodeCalculatorSubRequest, encodeResponse, options...))
 
 	decodeCalculatorMulRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorMulRequest) })
-	router.Handler(http.MethodPost, "/calculator/mul", transport.NewServer(endpoint.NewCalculatorMulEndpoint(service), decodeCalculatorMulRequest, encodeResponse))
+	router.Handler(http.MethodPost, "/calculator/mul", transport.NewServer(endpoint.NewCalculatorMulEndpoint(service), decodeCalculatorMulRequest, encodeResponse, options...))
 
 	decodeCalculatorDivRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorDivRequest) })
-	router.Handler(http.MethodPost, "/calculator/div", transport.NewServer(endpoint.NewCalculatorDivEndpoint(service), decodeCalculatorDivRequest, encodeResponse))
+	router.Handler(http.MethodPost, "/calculator/div", transport.NewServer(endpoint.NewCalculatorDivEndpoint(service), decodeCalculatorDivRequest, encodeResponse, options...))
 	return nil
 }

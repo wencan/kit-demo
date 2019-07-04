@@ -25,6 +25,8 @@ func UnaryErrorInterceptor(ctx context.Context, req interface{}, info *grpc.Unar
 		// 其它错误将被归类为unknown
 		code := status.Code(err)
 		if code == codes.Unknown {
+			// 返回grpc/status.statusError对象
+			// statusError实现了GRPCStatus() *Status方法
 			err = errmsg_grpc.Status(err).Err()
 		}
 	}

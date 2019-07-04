@@ -26,7 +26,7 @@ type CalculatorGRPCServer struct {
 }
 
 // NewCalculatorGRPCServer 创建健康检查GRPC服务
-func NewCalculatorGRPCServer(service endpoint.CalculatorService) *CalculatorGRPCServer {
+func NewCalculatorGRPCServer(service endpoint.CalculatorService, options ...transport.ServerOption) *CalculatorGRPCServer {
 	decodeAddRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorAddRequest) })
 	decodeSubRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorSubRequest) })
 	decodeMulRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorMulRequest) })
@@ -34,10 +34,10 @@ func NewCalculatorGRPCServer(service endpoint.CalculatorService) *CalculatorGRPC
 	encodeInt32Response := makeResponseEncoder(func() interface{} { return new(proto.CalculatorInt32Response) })
 	encodeFloatResponse := makeResponseEncoder(func() interface{} { return new(proto.CalculatorFloatResponse) })
 	return &CalculatorGRPCServer{
-		AddServer: transport.NewServer(endpoint.NewCalculatorAddEndpoint(service), decodeAddRequest, encodeInt32Response),
-		SubServer: transport.NewServer(endpoint.NewCalculatorSubEndpoint(service), decodeSubRequest, encodeInt32Response),
-		MulServer: transport.NewServer(endpoint.NewCalculatorMulEndpoint(service), decodeMulRequest, encodeInt32Response),
-		DivServer: transport.NewServer(endpoint.NewCalculatorDivEndpoint(service), decodeDivRequest, encodeFloatResponse),
+		AddServer: transport.NewServer(endpoint.NewCalculatorAddEndpoint(service), decodeAddRequest, encodeInt32Response, options...),
+		SubServer: transport.NewServer(endpoint.NewCalculatorSubEndpoint(service), decodeSubRequest, encodeInt32Response, options...),
+		MulServer: transport.NewServer(endpoint.NewCalculatorMulEndpoint(service), decodeMulRequest, encodeInt32Response, options...),
+		DivServer: transport.NewServer(endpoint.NewCalculatorDivEndpoint(service), decodeDivRequest, encodeFloatResponse, options...),
 	}
 }
 

@@ -34,11 +34,11 @@ type HealthGRPCServer struct {
 }
 
 // NewHealthGRPCServer 创建健康检查GRPC服务
-func NewHealthGRPCServer(service endpoint.HealthService) *HealthGRPCServer {
+func NewHealthGRPCServer(service endpoint.HealthService, options ...transport.ServerOption) *HealthGRPCServer {
 	decodeCheckRequest := makeRequestDecoder(func() interface{} { return new(protocol.HealthCheckRequest) })
 	encodeCheckResponse := makeResponseEncoder(func() interface{} { return new(proto.HealthCheckResponse) })
 	return &HealthGRPCServer{
-		CheckServer: transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeCheckRequest, encodeCheckResponse),
+		CheckServer: transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeCheckRequest, encodeCheckResponse, options...),
 	}
 }
 
