@@ -18,7 +18,7 @@ import (
 	http_zap "github.com/wencan/middlewares/logging/zap"
 	"go.uber.org/zap"
 
-	httpsvc "github.com/wencan/kit-demo/go-service/cmd/http"
+	httpsvc "github.com/wencan/kit-demo/go-service/cmd/transport/http"
 	service "github.com/wencan/kit-demo/go-service/service"
 )
 

@@ -23,7 +23,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	grpcsvc "github.com/wencan/kit-demo/go-service/cmd/grpc"
+	grpcsvc "github.com/wencan/kit-demo/go-service/cmd/transport/grpc"
 	service "github.com/wencan/kit-demo/go-service/service"
 	calculator_proto "github.com/wencan/kit-demo/protocol/github.com/wencan/kit-demo/calculator/grpc_calculator_v1"
 	health_proto "github.com/wencan/kit-demo/protocol/google.golang.org/grpc/health/grpc_health_v1"
