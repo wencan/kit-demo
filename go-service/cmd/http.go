@@ -22,14 +22,8 @@ import (
 	service "github.com/wencan/kit-demo/go-service/service"
 )
 
-// RunHTTPServer 配置并运行HTTP服务
-func RunHTTPServer(ctx context.Context, addr string, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) error {
-	select {
-	case <-ctx.Done():
-		return nil
-	default:
-	}
-
+// NewHTTPHandler 创建HTTP服务处理器
+func NewHTTPHandler(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
 	//
 	options := []transport.ServerOption{
 		transport.ServerErrorHandler(NewErrorLogHandler(logger)), // 错误日志输出。不会记录panic
@@ -46,20 +40,5 @@ func RunHTTPServer(ctx context.Context, addr string, healthService *service.Heal
 		})), // recover panic
 	)
 
-	s := http.Server{
-		Addr:    addr,
-		Handler: middleware(router),
-	}
-
-	go func() {
-		<-ctx.Done()
-		s.Shutdown(context.Background())
-	}()
-
-	err := s.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
-		logger.Error("error", zap.Error(err))
-		return err
-	}
-	return nil
+	return middleware(router), nil
 }

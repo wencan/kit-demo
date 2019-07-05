@@ -10,7 +10,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"net"
+	"net/http"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -29,20 +29,8 @@ import (
 	health_proto "github.com/wencan/kit-demo/protocol/google.golang.org/grpc/health/grpc_health_v1"
 )
 
-// RunGRPCServer 配置并运行GRPC服务
-func RunGRPCServer(ctx context.Context, network, addr string, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) error {
-	select {
-	case <-ctx.Done():
-		return nil
-	default:
-	}
-
-	ln, err := net.Listen(network, addr)
-	if err != nil {
-		logger.Error("error", zap.Error(err))
-		return nil
-	}
-
+// NewGRPCHandler 创建（实现了http.Handler的）GRPC服务
+func NewGRPCHandler(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
 	// 拦截器要注意顺序
 	// 前面的嵌套后面的
 	interceptors := []grpc.UnaryServerInterceptor{
@@ -53,27 +41,17 @@ func RunGRPCServer(ctx context.Context, network, addr string, healthService *ser
 			return status.Error(codes.Internal, fmt.Sprint(p))
 		})), // recovery panic
 	}
-	s := grpc.NewServer(grpc_middleware.WithUnaryServerChain(interceptors...))
+	server := grpc.NewServer(grpc_middleware.WithUnaryServerChain(interceptors...))
 
 	//
 	options := []transport.ServerOption{
 		transport.ServerErrorHandler(NewErrorLogHandler(logger)), // 错误日志输出。不会记录panic
 	}
-	health_proto.RegisterHealthServer(s, grpcsvc.NewHealthGRPCServer(healthService, options...))
-	calculator_proto.RegisterCalculatorServer(s, grpcsvc.NewCalculatorGRPCServer(claculatorService, options...))
+	health_proto.RegisterHealthServer(server, grpcsvc.NewHealthGRPCServer(healthService, options...))
+	calculator_proto.RegisterCalculatorServer(server, grpcsvc.NewCalculatorGRPCServer(claculatorService, options...))
 
 	// 服务反射
-	reflection.Register(s)
+	reflection.Register(server)
 
-	go func() {
-		<-ctx.Done()
-		s.GracefulStop()
-	}()
-
-	err = s.Serve(ln)
-	if err != nil && err != grpc.ErrServerStopped {
-		logger.Error("error", zap.Error(err))
-		return err
-	}
-	return nil
+	return server, nil
 }
