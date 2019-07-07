@@ -23,12 +23,16 @@ const (
 
 var _HealthServiceStatusNames = []string{"unknown", "serving", "notServing", "serviceUnknown"}
 
+func HealthServiceStatusName(status HealthServiceStatus) string {
+	return _HealthServiceStatusNames[status]
+}
+
 type HealthCheckRequest struct {
 	Service string `form:"service" json:"service"`
 }
 
 type HealthCheckResponse struct {
-	Status HealthServiceStatus `json:"-"`
+	Status HealthServiceStatus `json:"-" resp:"status"`
 }
 
 func (resp *HealthCheckResponse) MarshalJSON() ([]byte, error) {
