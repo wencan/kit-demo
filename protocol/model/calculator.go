@@ -4,7 +4,7 @@ package model
  * 计算器请求/响应数据模型
  * 请求模型中form标签用于支持github.com/go-playground/form解码
  * 请求模型中validate标签用于支持github.com/go-playground/validator做请求参数检查
- * 请求模型中resp标签用于支持github.com/wencan/copier深拷贝，不过一般直接使用字段名称即可
+ * 请求模型中reply标签用于支持github.com/wencan/copier深拷贝
  *
  * wencan
  * 2019-06-24
@@ -31,9 +31,9 @@ type CalculatorDivRequest struct {
 }
 
 type CalculatorInt32Response struct {
-	Result int32 `json:"result"`
+	Result int32 `reply:"result" json:"result"`
 }
 
 type CalculatorFloatResponse struct {
-	Result float32 `json:"result"`
+	Result float32 `reply:"result" json:"result"`
 }

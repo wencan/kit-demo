@@ -21,7 +21,7 @@ import (
 var (
 	Encoder = copier.NewCopier("protobuf.name", "form")
 
-	Decoder = copier.NewCopier("resp", "protobuf.name")
+	Decoder = copier.NewCopier("reply", "protobuf.name")
 )
 
 // makeRequestEncoder 构建一个将grpc请求转换为公共请求的编码器

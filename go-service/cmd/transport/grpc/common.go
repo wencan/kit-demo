@@ -18,9 +18,9 @@ import (
 )
 
 var (
-	Decoder = copier.NewCopier("protobuf.name", "form")
+	Decoder = copier.NewCopier("form", "protobuf.name")
 
-	Encoder = copier.NewCopier("resp", "protobuf.name")
+	Encoder = copier.NewCopier("protobuf.name", "reply")
 
 	validate = validator.New()
 )
