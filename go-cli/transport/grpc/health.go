@@ -1,5 +1,12 @@
 package grpc
 
+/*
+ * 健康检查GRPC客户端实现
+ *
+ * wencan
+ * 2019-07-08
+ */
+
 import (
 	"context"
 	"log"
