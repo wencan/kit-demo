@@ -9,9 +9,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 
-	"github.com/wencan/kit-demo/go-cli/transport/grpc"
+	"github.com/wencan/errmsg"
+
+	grpc_transport "github.com/wencan/kit-demo/go-cli/transport/grpc"
+	http_transport "github.com/wencan/kit-demo/go-cli/transport/http"
 
 	"github.com/spf13/cobra"
 	protocol "github.com/wencan/kit-demo/protocol/model"
@@ -23,15 +27,45 @@ type HealthClient interface {
 	Check(ctx context.Context, serviceName string) (protocol.HealthServiceStatus, error)
 }
 
+func healthGRPCClientFactory(ctx context.Context, target string) (HealthClient, error) {
+	return grpc_transport.NewHealthGRPCClient(ctx, target)
+}
+
+func healthHTTPClientFactory(ctx context.Context, target string) (HealthClient, error) {
+	return http_transport.NewHealthHTTPClient(ctx, target)
+}
+
 func main() {
-	log.SetFlags(0) // 最简单的日志
+	log.SetFlags(log.LstdFlags | log.Lshortfile) // 最简单的日志
+
+	var healthClientFactory func(ctx context.Context, target string) (HealthClient, error)
 
 	rootCmd := &cobra.Command{
 		Use: "kit-demo-cli",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			// protocol参数检查
+
+			protocolName, err := cmd.InheritedFlags().GetString("protocol")
+			if err != nil {
+				// cobra 会输出错误信息
+				// log.Println(err)
+				return err
+			}
+
+			switch protocolName {
+			case "grpc":
+				healthClientFactory = healthGRPCClientFactory
+			case "http":
+				healthClientFactory = healthHTTPClientFactory
+			default:
+				return errors.New("protocol invalid")
+			}
+			return nil
+		},
 	}
 
 	// 全局flag
-	rootCmd.PersistentFlags().String("protobuf", "grpc", "communication protocol, grpc or http")
+	rootCmd.PersistentFlags().String("protocol", "grpc", "communication protocol, grpc or http")
 
 	// 二级cmd 具体服务
 	{
@@ -52,13 +86,18 @@ func main() {
 						log.Println(err)
 						return
 					}
-					client, err := grpc.NewHealthGRPCClient(context.Background(), "127.0.0.1:8080")
+					client, err := healthClientFactory(context.Background(), "127.0.0.1:8080")
 					if err != nil {
 						return
 					}
 					status, err := client.Check(context.Background(), service)
 					if err != nil {
-						log.Println(err)
+						errMsg, ok := err.(*errmsg.ErrMsg)
+						if ok {
+							log.Println(errMsg.String())
+						} else {
+							log.Println(err)
+						}
 						return
 					}
 					log.Println("status:", protocol.HealthServiceStatusName(status))
