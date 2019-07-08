@@ -9,11 +9,14 @@ package cmd
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 
 	transport "github.com/go-kit/kit/transport/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/wencan/errmsg"
 	"github.com/wencan/middlewares"
 	http_zap "github.com/wencan/middlewares/logging/zap"
 	"go.uber.org/zap"
@@ -35,7 +38,18 @@ func NewHTTPHandler(ctx context.Context, healthService *service.HealthService, c
 	middleware := middlewares.Chain(
 		middlewares.LoggingMiddleware(http_zap.NewLogger(logger.WithOptions(zap.AddStacktrace(zap.PanicLevel)))), // 记录请求日志，不需要栈信息
 		middlewares.RecoverMiddleware(middlewares.WithRecoveryHandlerOption(func(w http.ResponseWriter, r *http.Request, recovery interface{}) {
-			w.WriteHeader(http.StatusInternalServerError)
+			// 创建一个ErrMsg错误
+			errMsg := errmsg.WrapError(errmsg.ErrInternal, errors.New(fmt.Sprint(recovery)))
+			jsons, err := errMsg.MarshalJSON()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				logger.Error("errmsg marshal json error", zap.Error(err))
+			} else {
+				w.Header().Set("Content-Type", "application/json; charset=utf-8")
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write(jsons)
+			}
+
 			logger.Error("recover a panic", zap.Any("panic", recovery))
 		})), // recover panic
 	)

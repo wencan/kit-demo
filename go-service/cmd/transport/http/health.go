@@ -19,6 +19,6 @@ import (
 // RegisterHealthHTTPHandlers 向http router注册健康检查方法处理器
 func RegisterHealthHTTPHandlers(router *httprouter.Router, service endpoint.HealthService, options ...transport.ServerOption) error {
 	decodeHealthCheckRequest := makeRequestDecoder(func() interface{} { return new(protocol.HealthCheckRequest) })
-	router.Handler(http.MethodGet, "/health", transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeHealthCheckRequest, encodeResponse, options...))
+	router.Handler(http.MethodGet, "/health/check", transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeHealthCheckRequest, encodeResponse, options...))
 	return nil
 }
