@@ -70,6 +70,7 @@ func main() {
 	ln, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		logger.Error("listen failed", zap.Error(err))
+		return
 	}
 	logger.Info("listen on " + ln.Addr().String())
 	server := &http.Server{
