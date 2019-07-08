@@ -50,7 +50,7 @@ func NewHTTPHandler(ctx context.Context, healthService *service.HealthService, c
 				w.Write(jsons)
 			}
 
-			logger.Error("recover a panic", zap.Any("panic", recovery))
+			logger.Error("recover a panic", zap.Any("panic", recovery), zap.Stack("stack"))
 		})), // recover panic
 	)
 

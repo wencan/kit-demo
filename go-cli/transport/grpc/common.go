@@ -39,6 +39,7 @@ func makeRequestEncoder(New func() interface{}) func(context.Context, interface{
 }
 
 // makeResponseDecoder 构建一个将公共响应编码为grpc响应的解码器
+// 如果返回错误，解码器不会被调用，需要实现endpoint中间件
 func makeResponseDecoder(New func() interface{}) func(context.Context, interface{}) (interface{}, error) {
 	resp := New()
 	return func(_ context.Context, grpcResp interface{}) (interface{}, error) {

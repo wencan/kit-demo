@@ -37,7 +37,7 @@ func NewGRPCHandler(ctx context.Context, healthService *service.HealthService, c
 		grpc_zap.UnaryServerInterceptor(logger.WithOptions(zap.AddStacktrace(zap.PanicLevel))), // 请求日志，不需要栈信息
 		grpcsvc.UnaryErrorInterceptor, // 错误处理拦截器
 		grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandlerContext(func(ctx context.Context, p interface{}) (err error) {
-			logger.Error("recover a panic", zap.Any("panic", p))
+			logger.Error("recover a panic", zap.Any("panic", p), zap.Stack("stack"))
 			return status.Error(codes.Internal, fmt.Sprint(p))
 		})), // recovery panic
 	}
