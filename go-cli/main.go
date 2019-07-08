@@ -17,6 +17,12 @@ import (
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
 
+// HealthClient 健康检查服务接口
+type HealthClient interface {
+	// Check 检查指定服务的健康状态
+	Check(ctx context.Context, serviceName string) (protocol.HealthServiceStatus, error)
+}
+
 func main() {
 	log.SetFlags(0) // 最简单的日志
 
