@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 
 	"github.com/wencan/kit-demo/go-service/cmd"
 
@@ -82,9 +83,11 @@ func main() {
 	go func() {
 		defer wg.Done()
 
-		// 等待int信号
+		// 等待退出信号
+		// 用户取消为int信号
+		// docker stop为term信号
 		sign := make(chan os.Signal, 1)
-		signal.Notify(sign, os.Interrupt)
+		signal.Notify(sign, os.Interrupt, syscall.SIGTERM)
 
 		select {
 		case <-sign:
