@@ -104,7 +104,7 @@ func main() {
 	}
 	registrar := etcdv3.NewRegistrar(etcdClient, etcdv3.Service{
 		Key:   serviceDirectory + instance,
-		Value: "http://" + instance,
+		Value: instance,
 	}, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "etcd")), zap.InfoLevel))
 	registrar.Register()
 	defer registrar.Deregister()

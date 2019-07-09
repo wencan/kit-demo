@@ -12,3 +12,4 @@
 *.out
 .vscode/launch.json
 go-service/debug
+default.etcd
