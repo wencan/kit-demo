@@ -22,11 +22,11 @@ type HealthEndpoints struct {
 }
 
 // Check 检查指定服务的健康状态
-func (points *HealthEndpoints) Check(ctx context.Context, service string) (protocol.HealthServiceStatus, error) {
+func (endpoints *HealthEndpoints) Check(ctx context.Context, service string) (protocol.HealthServiceStatus, error) {
 	req := &protocol.HealthCheckRequest{
 		Service: service,
 	}
-	resp, err := points.CheckEndpoint(ctx, req)
+	resp, err := endpoints.CheckEndpoint(ctx, req)
 	if err != nil {
 		return protocol.HealthServiceStatusUnknown, err
 	}

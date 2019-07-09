@@ -13,9 +13,11 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 
 	transport "github.com/go-kit/kit/transport/http"
 	"github.com/go-playground/form"
@@ -58,6 +60,7 @@ func (addrURL *AddrURL) Join(paths ...string) (*url.URL, error) {
 	return headURL, nil
 }
 
+// encodeQueryRequest 编码查询请求
 func encodeQueryRequest(ctx context.Context, r *http.Request, req interface{}) error {
 	// 构建查询请求，只适用于GET请求
 	if r.Method != http.MethodGet {
@@ -87,6 +90,30 @@ func encodeQueryRequest(ctx context.Context, r *http.Request, req interface{}) e
 	}
 
 	r.URL.RawQuery = query.Encode()
+	return nil
+}
+
+// encodeFormRequest 编码表单请求
+func encodeFormRequest(ctx context.Context, r *http.Request, req interface{}) error {
+	// 只适用于POST、PATCH请求
+	switch r.Method {
+	case http.MethodPost, http.MethodPatch:
+	default:
+		err := errors.New("request method error")
+		log.Println(err)
+		return err
+	}
+
+	// 将请求结构体编码为url.Values
+	form, err := Encoder.Encode(req)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	r.Body = ioutil.NopCloser(strings.NewReader(form.Encode()))
+
 	return nil
 }
 
