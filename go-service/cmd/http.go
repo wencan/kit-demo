@@ -25,8 +25,8 @@ import (
 	service "github.com/wencan/kit-demo/go-service/service"
 )
 
-// NewHTTPHandler 创建HTTP服务处理器
-func NewHTTPHandler(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
+// NewHandlerOnHTTP 创建基于HTTP的服务处理器
+func NewHandlerOnHTTP(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
 	//
 	options := []transport.ServerOption{
 		transport.ServerErrorHandler(NewErrorLogHandler(logger)), // 错误日志输出。不会记录panic

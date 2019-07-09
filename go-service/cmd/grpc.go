@@ -29,8 +29,8 @@ import (
 	health_proto "github.com/wencan/kit-demo/protocol/google.golang.org/grpc/health/grpc_health_v1"
 )
 
-// NewGRPCHandler 创建（实现了http.Handler的）GRPC服务
-func NewGRPCHandler(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
+// NewHandlerOnGRPC 创建基于GRPC的服务处理器
+func NewHandlerOnGRPC(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
 	// 拦截器要注意顺序
 	// 前面的嵌套后面的
 	interceptors := []grpc.UnaryServerInterceptor{
