@@ -21,6 +21,7 @@ import (
 
 	"github.com/wencan/kit-demo/go-cli/transport"
 	grpc_transport "github.com/wencan/kit-demo/go-cli/transport/grpc"
+	http_transport "github.com/wencan/kit-demo/go-cli/transport/http"
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
 
@@ -83,16 +84,17 @@ func main() {
 				return err
 			}
 
+			// 根据协议
+			// 指定传输客户端factory
 			switch protocolName {
 			case "grpc":
 				healthTransportFactory = func(ctx context.Context, target string) (transport.HealthTransport, error) {
 					return grpc_transport.NewHealthGRPCClient(ctx, target)
 				}
 			case "http":
-				// cli, err = NewCliOnHTTP()
-				// if err != nil {
-				// 	return err
-				// }
+				healthTransportFactory = func(ctx context.Context, target string) (transport.HealthTransport, error) {
+					return http_transport.NewHealthHTTPClient(ctx, target)
+				}
 			default:
 				return errors.New("protocol invalid")
 			}
@@ -116,6 +118,7 @@ func main() {
 					return err
 				}
 
+				// 创建健康检查客户端
 				healthClient = transport.NewHealthClient(healthTransportFactory, instancer, kit_log.NewLogfmtLogger(os.Stdout))
 				return nil
 			},

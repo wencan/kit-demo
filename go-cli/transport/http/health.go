@@ -1,7 +1,7 @@
 package http
 
 /*
- * 健康检查HTTP客户端实现
+ * 健康检查HTTP传输层
  *
  * wencan
  * 2019-07-08
@@ -12,13 +12,22 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-kit/kit/endpoint"
 	transport "github.com/go-kit/kit/transport/http"
-	cli_endpoint "github.com/wencan/kit-demo/go-cli/endpoint"
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
 
-// NewHealthHTTPClient 创建健康检查HTTP客户端
-func NewHealthHTTPClient(ctx context.Context, target string) (*cli_endpoint.HealthEndpoints, error) {
+var (
+	decodeCheckResponse = makeResponseDecoder(func() interface{} { return new(protocol.HealthCheckResponse) })
+)
+
+// HealthHTTPClient 健康检查传输层客户端
+type HealthHTTPClient struct {
+	checkClient *transport.Client
+}
+
+// NewHealthHTTPClient 创建健康检查HTTP传输层客户端
+func NewHealthHTTPClient(ctx context.Context, target string) (*HealthHTTPClient, error) {
 	// url解析必需scheme
 	if len(strings.Split(target, "://")) != 2 {
 		target = "http://" + target
@@ -32,10 +41,20 @@ func NewHealthHTTPClient(ctx context.Context, target string) (*cli_endpoint.Heal
 	if err != nil {
 		return nil, err
 	}
-	decodeCheckResponse := makeResponseDecoder(func() interface{} { return new(protocol.HealthCheckResponse) })
 	checkClient := transport.NewClient(http.MethodGet, checkURL, encodeQueryRequest, decodeCheckResponse)
 
-	return &cli_endpoint.HealthEndpoints{
-		CheckEndpoint: checkClient.Endpoint(),
+	return &HealthHTTPClient{
+		checkClient: checkClient,
 	}, nil
+}
+
+// NewCheckEndpoint 创建check方法endpoint
+func (client *HealthHTTPClient) NewCheckEndpoint() endpoint.Endpoint {
+	return client.checkClient.Endpoint()
+}
+
+// Close 关闭传输层客户端
+// 实现什么都没干。负载均衡的Factory需要这个
+func (client *HealthHTTPClient) Close() error {
+	return nil
 }
