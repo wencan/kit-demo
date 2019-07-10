@@ -12,13 +12,27 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-kit/kit/endpoint"
 	transport "github.com/go-kit/kit/transport/http"
-	cli_endpoint "github.com/wencan/kit-demo/go-cli/endpoint"
+
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
 
-// NewCalculatorHTTPClient 创建计算器HTTP客户端
-func NewCalculatorHTTPClient(ctx context.Context, target string) (*cli_endpoint.CalculatorEndpoints, error) {
+var (
+	decodeInt32Response = makeResponseDecoder(func() interface{} { return new(protocol.CalculatorInt32Response) })
+	decodeFloatResponse = makeResponseDecoder(func() interface{} { return new(protocol.CalculatorFloatResponse) })
+)
+
+// CalculatorHTTPClient 计算器传输层客户端
+type CalculatorHTTPClient struct {
+	addClient *transport.Client
+	subClient *transport.Client
+	mulClient *transport.Client
+	divClient *transport.Client
+}
+
+// NewCalculatorHTTPClient 创建计算器HTTP传输层客户端
+func NewCalculatorHTTPClient(ctx context.Context, target string) (*CalculatorHTTPClient, error) {
 	// url解析必需scheme
 	if len(strings.Split(target, "://")) != 2 {
 		target = "http://" + target
@@ -27,10 +41,6 @@ func NewCalculatorHTTPClient(ctx context.Context, target string) (*cli_endpoint.
 	if err != nil {
 		return nil, err
 	}
-
-	// 两个公共的响应解码器
-	decodeInt32Response := makeResponseDecoder(func() interface{} { return new(protocol.CalculatorInt32Response) })
-	decodeFloatResponse := makeResponseDecoder(func() interface{} { return new(protocol.CalculatorFloatResponse) })
 
 	addURL, err := addrURL.Join("/calculator/add")
 	if err != nil {
@@ -56,10 +66,30 @@ func NewCalculatorHTTPClient(ctx context.Context, target string) (*cli_endpoint.
 	}
 	divClient := transport.NewClient(http.MethodPost, divURL, encodeFormRequest, decodeFloatResponse)
 
-	return &cli_endpoint.CalculatorEndpoints{
-		AddEndpoint: addClient.Endpoint(),
-		SubEndpoint: subClient.Endpoint(),
-		MulEndpoint: mulClient.Endpoint(),
-		DivEndpoint: divClient.Endpoint(),
+	return &CalculatorHTTPClient{
+		addClient: addClient,
+		subClient: subClient,
+		mulClient: mulClient,
+		divClient: divClient,
 	}, nil
+}
+
+func (client *CalculatorHTTPClient) NewAddEndpoint() endpoint.Endpoint {
+	return client.addClient.Endpoint()
+}
+
+func (client *CalculatorHTTPClient) NewSubEndpoint() endpoint.Endpoint {
+	return client.subClient.Endpoint()
+}
+
+func (client *CalculatorHTTPClient) NewMulEndpoint() endpoint.Endpoint {
+	return client.mulClient.Endpoint()
+}
+
+func (client *CalculatorHTTPClient) NewDivEndpoint() endpoint.Endpoint {
+	return client.divClient.Endpoint()
+}
+
+func (client *CalculatorHTTPClient) Close() error {
+	return nil
 }

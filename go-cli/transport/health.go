@@ -2,6 +2,7 @@ package transport
 
 /*
  * 健康检查传输层
+ * endpoint和特定协议传输层的中间层
  * 实现了服务发现、负载均衡、失败重试
  *
  * wencan

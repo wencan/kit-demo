@@ -54,7 +54,7 @@ type CalculatorClient interface {
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile) // 最简单的日志
 
-	// etcd 服务发现
+	// etcd客户端
 	etcdClient, err := etcdv3.NewClient(context.Background(), etcdServers, etcdv3.ClientOptions{})
 	if err != nil {
 		log.Println(err)
@@ -67,8 +67,9 @@ func main() {
 	}
 
 	var healthClient HealthClient
-	// var calculatorClient CalculatorClient
+	var calculatorClient CalculatorClient
 	var healthTransportFactory transport.HealthTransportFactory
+	var calculatorTransportFactory transport.CalculatorTransportFactory
 
 	// rootCmd.PersistentPreRunE会被二级cmd.PersistentPreRunE覆盖
 	// 所以需要二级cmd.PersistentPreRunE主动调研rootCmd.PersistentPreRunE
@@ -91,9 +92,15 @@ func main() {
 				healthTransportFactory = func(ctx context.Context, target string) (transport.HealthTransport, error) {
 					return grpc_transport.NewHealthGRPCClient(ctx, target)
 				}
+				calculatorTransportFactory = func(ctx context.Context, target string) (transport.CalculatorTransport, error) {
+					return grpc_transport.NewCalculatorGRPCClient(ctx, target)
+				}
 			case "http":
 				healthTransportFactory = func(ctx context.Context, target string) (transport.HealthTransport, error) {
 					return http_transport.NewHealthHTTPClient(ctx, target)
+				}
+				calculatorTransportFactory = func(ctx context.Context, target string) (transport.CalculatorTransport, error) {
+					return http_transport.NewCalculatorHTTPClient(ctx, target)
 				}
 			default:
 				return errors.New("protocol invalid")
@@ -118,7 +125,7 @@ func main() {
 					return err
 				}
 
-				// 创建健康检查客户端
+				// 健康检查客户端
 				healthClient = transport.NewHealthClient(healthTransportFactory, instancer, kit_log.NewLogfmtLogger(os.Stdout))
 				return nil
 			},
@@ -150,114 +157,111 @@ func main() {
 		}
 		rootCmd.AddCommand(healthCmd)
 
-		// // 计算器
-		// var calculatorCli *CalculatorCli
-		// calculatorCmd := &cobra.Command{
-		// 	Use:   "calculator",
-		// 	Short: "simple calculator",
-		// 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// 		// 调用被覆盖的rootCmd.PersistentPreRunE
-		// 		// 创建cli
-		// 		err := cmd.Parent().PersistentPreRunE(cmd.Parent(), []string{})
-		// 		if err != nil {
-		// 			return err
-		// 		}
+		// 计算器
+		calculatorCmd := &cobra.Command{
+			Use:   "calculator",
+			Short: "simple calculator",
+			PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+				// 调用被覆盖的rootCmd.PersistentPreRunE
+				// 创建cli
+				err := cmd.Parent().PersistentPreRunE(cmd.Parent(), []string{})
+				if err != nil {
+					return err
+				}
 
-		// 		calculatorCli, err = cli.NewCalculatorCli(context.Background(), "127.0.0.1:8080")
-		// 		if err != nil {
-		// 			return err
-		// 		}
-		// 		return nil
-		// 	},
-		// }
-		// {
-		// 	addCmd := &cobra.Command{
-		// 		Use:     "add",
-		// 		Example: "kit-demo-cli calcuator add --a 123 --b 456",
-		// 		Run: func(cmd *cobra.Command, args []string) {
-		// 			a, b, err := parseTwoInt32Flags(cmd.LocalFlags(), "a", "b")
-		// 			if err != nil {
-		// 				return
-		// 			}
-		// 			result, err := calculatorCli.Add(context.Background(), a, b)
-		// 			if err != nil {
-		// 				log.Println(err)
-		// 				return
-		// 			}
-		// 			log.Println("result:", result)
-		// 		},
-		// 	}
-		// 	addCmd.Flags().Int32("a", 0, "")
-		// 	addCmd.Flags().Int32("b", 0, "")
-		// 	addCmd.MarkFlagRequired("a")
-		// 	addCmd.MarkFlagRequired("b")
+				// 计算器客户端
+				calculatorClient = transport.NewCalculatorClient(calculatorTransportFactory, instancer, kit_log.NewLogfmtLogger(os.Stdout))
+				return nil
+			},
+		}
+		{
+			addCmd := &cobra.Command{
+				Use:     "add",
+				Example: "kit-demo-cli calcuator add --a 123 --b 456",
+				Run: func(cmd *cobra.Command, args []string) {
+					a, b, err := parseTwoInt32Flags(cmd.LocalFlags(), "a", "b")
+					if err != nil {
+						return
+					}
+					result, err := calculatorClient.Add(context.Background(), a, b)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					log.Println("result:", result)
+				},
+			}
+			addCmd.Flags().Int32("a", 0, "")
+			addCmd.Flags().Int32("b", 0, "")
+			addCmd.MarkFlagRequired("a")
+			addCmd.MarkFlagRequired("b")
 
-		// 	subCmd := &cobra.Command{
-		// 		Use:     "sub",
-		// 		Example: "kit-demo-cli calcuator sub --c 678 --d 345",
-		// 		Run: func(cmd *cobra.Command, args []string) {
-		// 			c, d, err := parseTwoInt32Flags(cmd.LocalFlags(), "c", "d")
-		// 			if err != nil {
-		// 				return
-		// 			}
-		// 			result, err := calculatorCli.Sub(context.Background(), c, d)
-		// 			if err != nil {
-		// 				log.Println(err)
-		// 				return
-		// 			}
-		// 			log.Println("result:", result)
-		// 		},
-		// 	}
-		// 	subCmd.Flags().Int32("c", 0, "")
-		// 	subCmd.Flags().Int32("d", 0, "")
-		// 	subCmd.MarkFlagRequired("c")
-		// 	subCmd.MarkFlagRequired("d")
+			subCmd := &cobra.Command{
+				Use:     "sub",
+				Example: "kit-demo-cli calcuator sub --c 678 --d 345",
+				Run: func(cmd *cobra.Command, args []string) {
+					c, d, err := parseTwoInt32Flags(cmd.LocalFlags(), "c", "d")
+					if err != nil {
+						return
+					}
+					result, err := calculatorClient.Sub(context.Background(), c, d)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					log.Println("result:", result)
+				},
+			}
+			subCmd.Flags().Int32("c", 0, "")
+			subCmd.Flags().Int32("d", 0, "")
+			subCmd.MarkFlagRequired("c")
+			subCmd.MarkFlagRequired("d")
 
-		// 	mulCmd := &cobra.Command{
-		// 		Use:     "mul",
-		// 		Example: "kit-demo-cli calcuator mul --e 123 --f 456",
-		// 		Run: func(cmd *cobra.Command, args []string) {
-		// 			e, f, err := parseTwoInt32Flags(cmd.LocalFlags(), "e", "f")
-		// 			if err != nil {
-		// 				return
-		// 			}
-		// 			result, err := calculatorCli.Mul(context.Background(), e, f)
-		// 			if err != nil {
-		// 				log.Println(err)
-		// 				return
-		// 			}
-		// 			log.Println("result:", result)
-		// 		},
-		// 	}
-		// 	mulCmd.Flags().Int32("e", 0, "")
-		// 	mulCmd.Flags().Int32("f", 0, "")
-		// 	mulCmd.MarkFlagRequired("e")
-		// 	mulCmd.MarkFlagRequired("f")
+			mulCmd := &cobra.Command{
+				Use:     "mul",
+				Example: "kit-demo-cli calcuator mul --e 123 --f 456",
+				Run: func(cmd *cobra.Command, args []string) {
+					e, f, err := parseTwoInt32Flags(cmd.LocalFlags(), "e", "f")
+					if err != nil {
+						return
+					}
+					result, err := calculatorClient.Mul(context.Background(), e, f)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					log.Println("result:", result)
+				},
+			}
+			mulCmd.Flags().Int32("e", 0, "")
+			mulCmd.Flags().Int32("f", 0, "")
+			mulCmd.MarkFlagRequired("e")
+			mulCmd.MarkFlagRequired("f")
 
-		// 	divCmd := &cobra.Command{
-		// 		Use:     "div",
-		// 		Example: "kit-demo-cli calcuator div --m 123 --n 456",
-		// 		Run: func(cmd *cobra.Command, args []string) {
-		// 			m, n, err := parseTwoInt32Flags(cmd.LocalFlags(), "m", "n")
-		// 			if err != nil {
-		// 				return
-		// 			}
-		// 			result, err := calculatorCli.Div(context.Background(), m, n)
-		// 			if err != nil {
-		// 				log.Println(err)
-		// 				return
-		// 			}
-		// 			log.Println("result:", result)
-		// 		},
-		// 	}
-		// 	divCmd.Flags().Int32("m", 0, "")
-		// 	divCmd.Flags().Int32("n", 0, "")
-		// 	divCmd.MarkFlagRequired("m")
-		// 	divCmd.MarkFlagRequired("n")
+			divCmd := &cobra.Command{
+				Use:     "div",
+				Example: "kit-demo-cli calcuator div --m 123 --n 456",
+				Run: func(cmd *cobra.Command, args []string) {
+					m, n, err := parseTwoInt32Flags(cmd.LocalFlags(), "m", "n")
+					if err != nil {
+						return
+					}
+					result, err := calculatorClient.Div(context.Background(), m, n)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					log.Println("result:", result)
+				},
+			}
+			divCmd.Flags().Int32("m", 0, "")
+			divCmd.Flags().Int32("n", 0, "")
+			divCmd.MarkFlagRequired("m")
+			divCmd.MarkFlagRequired("n")
 
-		// 	calculatorCmd.AddCommand(addCmd, subCmd, mulCmd, divCmd)
-		// }
-		// rootCmd.AddCommand(calculatorCmd)
+			calculatorCmd.AddCommand(addCmd, subCmd, mulCmd, divCmd)
+		}
+		rootCmd.AddCommand(calculatorCmd)
 	}
 
 	rootCmd.Execute()
