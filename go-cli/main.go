@@ -12,6 +12,9 @@ import (
 	"errors"
 	"log"
 	"os"
+	"time"
+
+	"github.com/go-kit/kit/sd"
 
 	kit_log "github.com/go-kit/kit/log"
 
@@ -26,7 +29,6 @@ import (
 )
 
 var (
-	etcdServers      = []string{"127.0.0.1:2379"}
 	serviceDirectory = "/services/kit-demo"
 )
 
@@ -54,17 +56,7 @@ type CalculatorClient interface {
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile) // 最简单的日志
 
-	// etcd客户端
-	etcdClient, err := etcdv3.NewClient(context.Background(), etcdServers, etcdv3.ClientOptions{})
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	instancer, err := etcdv3.NewInstancer(etcdClient, serviceDirectory, kit_log.NewLogfmtLogger(os.Stdout))
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	var instancer sd.Instancer
 
 	var healthClient HealthClient
 	var calculatorClient CalculatorClient
@@ -77,14 +69,13 @@ func main() {
 	rootCmd := &cobra.Command{
 		Use: "kit-demo-cli",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			// protocol参数检查
+			// protocol参数
 			protocolName, err := cmd.Flags().GetString("protocol")
 			if err != nil {
 				// cobra 会输出错误信息
 				// log.Println(err)
 				return err
 			}
-
 			// 根据协议
 			// 指定传输客户端factory
 			switch protocolName {
@@ -105,11 +96,32 @@ func main() {
 			default:
 				return errors.New("protocol invalid")
 			}
+
+			// etcd参数
+			etcdServers, err := cmd.Flags().GetStringSlice("etcd")
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+			// etcd客户端
+			connCtx, _ := context.WithTimeout(context.Background(), time.Second*10)
+			etcdClient, err := etcdv3.NewClient(connCtx, etcdServers, etcdv3.ClientOptions{})
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+			instancer, err = etcdv3.NewInstancer(etcdClient, serviceDirectory, kit_log.NewLogfmtLogger(os.Stdout))
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+
 			return nil
 		},
 	}
 	// 全局flag
 	rootCmd.PersistentFlags().String("protocol", "grpc", "communication protocol, grpc or http")
+	rootCmd.PersistentFlags().StringSlice("etcd", []string{"127.0.0.1:2379"}, "etcd server address")
 
 	// 二级cmd 具体服务
 	{
