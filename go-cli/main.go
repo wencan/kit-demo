@@ -14,13 +14,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-kit/kit/sd"
-
 	kit_log "github.com/go-kit/kit/log"
-
+	"github.com/go-kit/kit/sd"
 	"github.com/go-kit/kit/sd/etcdv3"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/wencan/kit-plugins/sd/mdns"
 
 	"github.com/wencan/kit-demo/go-cli/transport"
 	grpc_transport "github.com/wencan/kit-demo/go-cli/transport/grpc"
@@ -103,17 +102,29 @@ func main() {
 				log.Println(err)
 				return err
 			}
-			// etcd客户端
-			connCtx, _ := context.WithTimeout(context.Background(), time.Second*10)
-			etcdClient, err := etcdv3.NewClient(connCtx, etcdServers, etcdv3.ClientOptions{})
-			if err != nil {
-				log.Println(err)
-				return err
-			}
-			instancer, err = etcdv3.NewInstancer(etcdClient, serviceDirectory, kit_log.NewLogfmtLogger(os.Stdout))
-			if err != nil {
-				log.Println(err)
-				return err
+			if len(etcdServers) > 0 {
+				// 如果提供etcd服务器地址参数
+				// 使用etcd发现服务
+				// etcd客户端
+				connCtx, _ := context.WithTimeout(context.Background(), time.Second*10)
+				etcdClient, err := etcdv3.NewClient(connCtx, etcdServers, etcdv3.ClientOptions{})
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+				instancer, err = etcdv3.NewInstancer(etcdClient, serviceDirectory, kit_log.NewLogfmtLogger(os.Stdout))
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+			} else {
+				// 如果没提供etcd服务器地址参数
+				// 使用mDNS发现服务
+				instancer, err = mdns.NewInstancer(serviceDirectory, mdns.InstancerOptions{}, kit_log.NewLogfmtLogger(os.Stdout))
+				if err != nil {
+					log.Println(err)
+					return err
+				}
 			}
 
 			return nil
@@ -121,7 +132,7 @@ func main() {
 	}
 	// 全局flag
 	rootCmd.PersistentFlags().String("protocol", "grpc", "communication protocol, grpc or http")
-	rootCmd.PersistentFlags().StringSlice("etcd", []string{"127.0.0.1:2379"}, "etcd server address")
+	rootCmd.PersistentFlags().StringSlice("etcd", []string{}, "etcd servers address")
 
 	// 二级cmd 具体服务
 	{

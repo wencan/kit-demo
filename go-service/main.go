@@ -8,14 +8,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
 
 	kit_zap "github.com/go-kit/kit/log/zap"
+	"github.com/go-kit/kit/sd"
 	"github.com/go-kit/kit/sd/etcdv3"
+	"github.com/spf13/pflag"
 	"github.com/wencan/errmsg"
 	errmsg_zap "github.com/wencan/errmsg/logging/zap"
+	"github.com/wencan/kit-plugins/sd/mdns"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/http2"
@@ -26,9 +30,14 @@ import (
 )
 
 var (
-	etcdServers      = []string{"127.0.0.1:2379"}
-	serviceDirectory = "/services/kit-demo/"
+	etcdServers      = []string{}
+	serviceDirectory = "/services/kit-demo"
 )
+
+func init() {
+	pflag.StringSliceVar(&etcdServers, "etcd", []string{}, "etcd servers address")
+	pflag.Parse()
+}
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -88,24 +97,46 @@ func main() {
 
 	// 服务地址
 	ip := getOutboundIP().String()
-	_, port, err := net.SplitHostPort(ln.Addr().String())
+	_, sport, err := net.SplitHostPort(ln.Addr().String())
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	instance := fmt.Sprintf("%s:%s", ip, port)
+	port, err := strconv.Atoi(sport)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	instance := fmt.Sprintf("%s:%d", ip, port)
 
 	// 服务注册
-	etcdClient, err := etcdv3.NewClient(ctx, etcdServers, etcdv3.ClientOptions{})
-	if err != nil {
-		log.Println(err)
-		ln.Close()
-		return
+	var registrar sd.Registrar
+	if len(etcdServers) > 0 {
+		// etcd
+		etcdClient, err := etcdv3.NewClient(ctx, etcdServers, etcdv3.ClientOptions{})
+		if err != nil {
+			log.Println(err)
+			ln.Close()
+			return
+		}
+		registrar = etcdv3.NewRegistrar(etcdClient, etcdv3.Service{
+			Key:   serviceDirectory + "/" + instance,
+			Value: instance,
+		}, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "etcd")), zap.InfoLevel))
+	} else {
+		// mDNS
+		service := mdns.Service{
+			Instance: instance,
+			Service:  serviceDirectory,
+			Port:     port,
+		}
+		registrar, err = mdns.NewRegistrar(service, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "mDNS")), zap.InfoLevel))
+		if err != nil {
+			log.Println(err)
+			ln.Close()
+			return
+		}
 	}
-	registrar := etcdv3.NewRegistrar(etcdClient, etcdv3.Service{
-		Key:   serviceDirectory + instance,
-		Value: instance,
-	}, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "etcd")), zap.InfoLevel))
 	registrar.Register()
 	defer registrar.Deregister()
 
