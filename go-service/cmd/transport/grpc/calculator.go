@@ -25,7 +25,7 @@ type CalculatorGRPCServer struct {
 	DivServer transport.Handler
 }
 
-// NewCalculatorGRPCServer 创建健康检查GRPC服务
+// NewCalculatorGRPCServer 创建计算器GRPC服务
 func NewCalculatorGRPCServer(service endpoint.CalculatorService, options ...transport.ServerOption) *CalculatorGRPCServer {
 	decodeAddRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorAddRequest) })
 	decodeSubRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorSubRequest) })
