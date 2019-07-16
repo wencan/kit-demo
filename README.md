@@ -28,6 +28,20 @@ go-kit的demo系统
 ### 也许大目标
 * 根据proto接口定义文件生成接口逻辑代码（endpoint和transport）
 
+## 分支
+
+### [fasthttp](https://github.com/wencan/kit-demo/tree/fasthttp)
+
+基于fasthttp提供HTTP服务。
+
+基于[fasthttp](https://github.com/valyala/fasthttp)和[github.com/wencan/kit-plugins/transport/fasthttp](https://github.com/wencan/kit-plugins/tree/master/transport/fasthttp)实现。
+
+目前存在以下问题：
+* fasthttp不支持HTTP/2，不能像net/http那样同时提供GRPC服务。该分支未启用GRPC服务。
+* github.com/wencan/kit-plugins/transport/fasthttp参照fasthttp的设计，会尽可能复用对象。但server端响应对象的复用关系到endpoint的逻辑。其它transport并未考虑对象的复用。不想因为fasthttp改变其它部分的逻辑，因此为fasthttp添加了[CompatibleServer](https://godoc.org/github.com/wencan/kit-plugins/transport/fasthttp#NewCompatibleServer)，实现了部分对象复用的丑逻辑。
+
+   如果有心使用github.com/wencan/kit-plugins/transport/fasthttp，应参照fasthttp的设计，尽可能复用全部可复用的对象。
+
 ## 目录结构
 ```
 |-- go-cli                      // cli客户端
