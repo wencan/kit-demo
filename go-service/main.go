@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"sync"
 	"syscall"
+
+	"github.com/valyala/fasthttp"
 
 	kit_zap "github.com/go-kit/kit/log/zap"
 	"github.com/go-kit/kit/sd"
@@ -22,8 +22,6 @@ import (
 	"github.com/wencan/kit-plugins/sd/mdns"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 
 	"github.com/wencan/kit-demo/go-service/cmd"
 	"github.com/wencan/kit-demo/go-service/service"
@@ -60,32 +58,31 @@ func main() {
 	claculatorService := service.NewCalculatorService()
 
 	// 服务接口处理
-	grpcHandler, err := cmd.NewHandlerOnGRPC(ctx, healthService, claculatorService, logger.With(zap.String("protocol", "gRPC")))
-	if err != nil {
-		logger.Error("NewHandlerOnGRPC fail", errmsg_zap.Fields(err)...)
-		return
-	}
+	// grpcHandler, err := cmd.NewHandlerOnGRPC(ctx, healthService, claculatorService, logger.With(zap.String("protocol", "gRPC")))
+	// if err != nil {
+	// 	logger.Error("NewHandlerOnGRPC fail", errmsg_zap.Fields(err)...)
+	// 	return
+	// }
 	httpHandler, err := cmd.NewHandlerOnHTTP(ctx, healthService, claculatorService, logger.With(zap.String("protocol", "HTTP")))
 	if err != nil {
 		logger.Error("NewHandlerOnHTTP fail", errmsg_zap.Fields(err)...)
 		return
 	}
 
-	// 根据Content-Type判断处理方法
-	dispatcher := func(w http.ResponseWriter, r *http.Request) {
-		contentType := r.Header.Get("Content-Type")
-		contentType = strings.Split(contentType, ";")[0]
-		switch contentType {
-		case "application/grpc":
-			grpcHandler.ServeHTTP(w, r)
-		default:
-			httpHandler.ServeHTTP(w, r)
-		}
-	}
+	// // 根据Content-Type判断处理方法
+	// dispatcher := func(ctx *fasthttp.RequestCtx) {
+	// 	contentType := string(ctx.Request.Header.ContentType())
+	// 	switch contentType {
+	// 	case "application/grpc":
+	// 		grpcHandler(ctx)
+	// 	default:
+	// 		httpHandler(ctx)
+	// 	}
+	// }
 
-	// 明文http2服务
-	h2s := &http2.Server{}
-	handler := h2c.NewHandler(http.HandlerFunc(dispatcher), h2s)
+	// // 明文http2服务
+	// h2s := &http2.Server{}
+	// handler := h2c.NewHandler(http.HandlerFunc(dispatcher), h2s)
 
 	// 监听
 	ln, err := net.Listen("tcp", ":")
@@ -141,8 +138,9 @@ func main() {
 	defer registrar.Deregister()
 
 	// 服务
-	server := &http.Server{
-		Handler: handler,
+	server := &fasthttp.Server{
+		Name:    "kit-demo", // UserAgent
+		Handler: httpHandler,
 	}
 
 	// 优雅退出
@@ -160,14 +158,14 @@ func main() {
 		select {
 		case <-sign:
 			logger.Info("server shutdown")
-			server.Shutdown(ctx)
+			server.Shutdown()
 		case <-ctx.Done():
 		}
 	}()
 
 	// 开始服务
 	err = server.Serve(ln)
-	if err != nil && err != http.ErrServerClosed {
+	if err != nil {
 		cancel()
 		logger.Error("server failed", zap.Error(err))
 	}

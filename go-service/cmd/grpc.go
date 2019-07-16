@@ -10,18 +10,18 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"net/http"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	transport "github.com/go-kit/kit/transport/grpc"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/valyala/fasthttp"
+	"github.com/valyala/fasthttp/fasthttpadaptor"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 
 	grpcsvc "github.com/wencan/kit-demo/go-service/cmd/transport/grpc"
 	service "github.com/wencan/kit-demo/go-service/service"
@@ -30,7 +30,7 @@ import (
 )
 
 // NewHandlerOnGRPC 创建基于GRPC的服务处理器
-func NewHandlerOnGRPC(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
+func NewHandlerOnGRPC(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (fasthttp.RequestHandler, error) {
 	// 拦截器要注意顺序
 	// 前面的嵌套后面的
 	interceptors := []grpc.UnaryServerInterceptor{
@@ -53,5 +53,5 @@ func NewHandlerOnGRPC(ctx context.Context, healthService *service.HealthService,
 	// 服务反射
 	reflection.Register(server)
 
-	return server, nil
+	return fasthttpadaptor.NewFastHTTPHandlerFunc(server.ServeHTTP), nil
 }
