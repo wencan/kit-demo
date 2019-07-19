@@ -43,12 +43,15 @@ func NewHandlerOnGRPC(ctx context.Context, healthService *service.HealthService,
 	}
 	server := grpc.NewServer(grpc_middleware.WithUnaryServerChain(interceptors...))
 
-	//
+	// endpoint 中间件
+	middlewares := ServerMiddlewares()
+
+	// 服务端可选配置
 	options := []transport.ServerOption{
 		transport.ServerErrorHandler(NewErrorLogHandler(logger)), // 错误日志输出。不会记录panic
 	}
-	health_proto.RegisterHealthServer(server, grpcsvc.NewHealthGRPCServer(healthService, options...))
-	calculator_proto.RegisterCalculatorServer(server, grpcsvc.NewCalculatorGRPCServer(claculatorService, options...))
+	health_proto.RegisterHealthServer(server, grpcsvc.NewHealthGRPCServer(healthService, middlewares, options...))
+	calculator_proto.RegisterCalculatorServer(server, grpcsvc.NewCalculatorGRPCServer(claculatorService, middlewares, options...))
 
 	// 服务反射
 	reflection.Register(server)

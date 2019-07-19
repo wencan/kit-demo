@@ -9,11 +9,12 @@ package grpc
 import (
 	"context"
 
+	"github.com/go-kit/kit/endpoint"
 	transport "github.com/go-kit/kit/transport/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/wencan/kit-demo/go-service/cmd/endpoint"
+	cmd_endpoint "github.com/wencan/kit-demo/go-service/cmd/endpoint"
 	proto "github.com/wencan/kit-demo/protocol/google.golang.org/grpc/health/grpc_health_v1"
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
@@ -34,11 +35,11 @@ type HealthGRPCServer struct {
 }
 
 // NewHealthGRPCServer 创建健康检查GRPC服务
-func NewHealthGRPCServer(service endpoint.HealthService, options ...transport.ServerOption) *HealthGRPCServer {
+func NewHealthGRPCServer(service cmd_endpoint.HealthService, middlewares endpoint.Middleware, options ...transport.ServerOption) *HealthGRPCServer {
 	decodeCheckRequest := makeRequestDecoder(func() interface{} { return new(protocol.HealthCheckRequest) })
 	encodeCheckResponse := makeResponseEncoder(func() interface{} { return new(proto.HealthCheckResponse) })
 	return &HealthGRPCServer{
-		CheckServer: transport.NewServer(endpoint.NewHealthCheckEndpoint(service), decodeCheckRequest, encodeCheckResponse, options...),
+		CheckServer: transport.NewServer(middlewares(cmd_endpoint.NewHealthCheckEndpoint(service)), decodeCheckRequest, encodeCheckResponse, options...),
 	}
 }
 

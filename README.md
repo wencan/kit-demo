@@ -18,11 +18,11 @@ go-kit的demo系统
 * 公共请求/相应数据模型。程序内实现，[copier](https://github.com/wencan/copier)和[github.com/go-playground/form](https://github.com/go-playground/form)辅助
 * 比较通用的错误处理。基于[github.com/wencan/errmsg](https://github.com/wencan/errmsg)
 * 结构化日志。基于[go.uber.org/zap](https://github.com/uber-go/zap)
-* 服务注册/发现、负载均衡、失败重试
+* 服务注册/发现、负载均衡、失败重试、限流
 * 基于mDNS的服务注册/发现。基于[github.com/wencan/kit-plugins/sd/mdns](https://github.com/wencan/kit-plugins/tree/master/sd/mdns)
 
 ### 待实现特性
-* 限流、熔断
+* 熔断
 * 分布式跟踪
 
 ### 也许大目标

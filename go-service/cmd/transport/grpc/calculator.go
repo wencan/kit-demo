@@ -10,9 +10,10 @@ package grpc
 import (
 	"context"
 
+	"github.com/go-kit/kit/endpoint"
 	transport "github.com/go-kit/kit/transport/grpc"
 
-	"github.com/wencan/kit-demo/go-service/cmd/endpoint"
+	cmd_endpoint "github.com/wencan/kit-demo/go-service/cmd/endpoint"
 	proto "github.com/wencan/kit-demo/protocol/github.com/wencan/kit-demo/calculator/grpc_calculator_v1"
 	protocol "github.com/wencan/kit-demo/protocol/model"
 )
@@ -26,7 +27,7 @@ type CalculatorGRPCServer struct {
 }
 
 // NewCalculatorGRPCServer 创建计算器GRPC服务
-func NewCalculatorGRPCServer(service endpoint.CalculatorService, options ...transport.ServerOption) *CalculatorGRPCServer {
+func NewCalculatorGRPCServer(service cmd_endpoint.CalculatorService, middlewares endpoint.Middleware, options ...transport.ServerOption) *CalculatorGRPCServer {
 	decodeAddRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorAddRequest) })
 	decodeSubRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorSubRequest) })
 	decodeMulRequest := makeRequestDecoder(func() interface{} { return new(protocol.CalculatorMulRequest) })
@@ -34,10 +35,10 @@ func NewCalculatorGRPCServer(service endpoint.CalculatorService, options ...tran
 	encodeInt32Response := makeResponseEncoder(func() interface{} { return new(proto.CalculatorInt32Response) })
 	encodeFloatResponse := makeResponseEncoder(func() interface{} { return new(proto.CalculatorFloatResponse) })
 	return &CalculatorGRPCServer{
-		AddServer: transport.NewServer(endpoint.NewCalculatorAddEndpoint(service), decodeAddRequest, encodeInt32Response, options...),
-		SubServer: transport.NewServer(endpoint.NewCalculatorSubEndpoint(service), decodeSubRequest, encodeInt32Response, options...),
-		MulServer: transport.NewServer(endpoint.NewCalculatorMulEndpoint(service), decodeMulRequest, encodeInt32Response, options...),
-		DivServer: transport.NewServer(endpoint.NewCalculatorDivEndpoint(service), decodeDivRequest, encodeFloatResponse, options...),
+		AddServer: transport.NewServer(middlewares(cmd_endpoint.NewCalculatorAddEndpoint(service)), decodeAddRequest, encodeInt32Response, options...),
+		SubServer: transport.NewServer(middlewares(cmd_endpoint.NewCalculatorSubEndpoint(service)), decodeSubRequest, encodeInt32Response, options...),
+		MulServer: transport.NewServer(middlewares(cmd_endpoint.NewCalculatorMulEndpoint(service)), decodeMulRequest, encodeInt32Response, options...),
+		DivServer: transport.NewServer(middlewares(cmd_endpoint.NewCalculatorDivEndpoint(service)), decodeDivRequest, encodeFloatResponse, options...),
 	}
 }
 

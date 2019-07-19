@@ -27,13 +27,16 @@ import (
 
 // NewHandlerOnHTTP 创建基于HTTP的服务处理器
 func NewHandlerOnHTTP(ctx context.Context, healthService *service.HealthService, claculatorService *service.CalculatorService, logger *zap.Logger) (http.Handler, error) {
-	//
+	// endpoint 中间件
+	endpointMiddlewares := ServerMiddlewares()
+
+	// 服务可选配置
 	options := []transport.ServerOption{
 		transport.ServerErrorHandler(NewErrorLogHandler(logger)), // 错误日志输出。不会记录panic
 	}
 	router := httprouter.New()
-	httpsvc.RegisterHealthHTTPHandlers(router, healthService, options...)
-	httpsvc.RegisterCalculatorHTTPHandlers(router, claculatorService, options...)
+	httpsvc.RegisterHealthHTTPHandlers(router, healthService, endpointMiddlewares, options...)
+	httpsvc.RegisterCalculatorHTTPHandlers(router, claculatorService, endpointMiddlewares, options...)
 
 	middleware := middlewares.Chain(
 		middlewares.LoggingMiddleware(http_zap.NewLogger(logger.WithOptions(zap.AddStacktrace(zap.PanicLevel)))), // 记录请求日志，不需要栈信息
