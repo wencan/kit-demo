@@ -31,11 +31,13 @@ import (
 
 var (
 	etcdServers      = []string{}
+	listenAddress    = ":"
 	serviceDirectory = "/services/kit-demo"
 )
 
 func init() {
 	pflag.StringSliceVar(&etcdServers, "etcd", []string{}, "etcd servers address")
+	pflag.StringVar(&listenAddress, "listen", ":", "listen address")
 	pflag.Parse()
 }
 
@@ -88,7 +90,7 @@ func main() {
 	handler := h2c.NewHandler(http.HandlerFunc(dispatcher), h2s)
 
 	// 监听
-	ln, err := net.Listen("tcp", ":")
+	ln, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		logger.Error("listen failed", zap.Error(err))
 		return
@@ -96,18 +98,20 @@ func main() {
 	logger.Info("listen on " + ln.Addr().String())
 
 	// 服务地址
-	ip := getOutboundIP().String()
-	_, sport, err := net.SplitHostPort(ln.Addr().String())
+	host, sport, err := net.SplitHostPort(ln.Addr().String())
 	if err != nil {
 		log.Println(err)
 		return
+	}
+	if host == "::" {
+		host = getOutboundIP().String()
 	}
 	port, err := strconv.Atoi(sport)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	instance := fmt.Sprintf("%s:%d", ip, port)
+	instance := fmt.Sprintf("%s:%d", host, port)
 
 	// 服务注册
 	var registrar sd.Registrar
