@@ -15,7 +15,9 @@ import (
 
 	kit_zap "github.com/go-kit/kit/log/zap"
 	"github.com/go-kit/kit/sd"
+	"github.com/go-kit/kit/sd/consul"
 	"github.com/go-kit/kit/sd/etcdv3"
+	consul_api "github.com/hashicorp/consul/api"
 	"github.com/spf13/pflag"
 	"github.com/wencan/errmsg"
 	errmsg_zap "github.com/wencan/errmsg/logging/zap"
@@ -31,12 +33,15 @@ import (
 
 var (
 	etcdServers      = []string{}
+	consulServer     = ""
 	listenAddress    = ":"
-	serviceDirectory = "/services/kit-demo"
+	serviceName      = "kit-demo"
+	serviceDirectory = "/services/" + serviceName
 )
 
 func init() {
 	pflag.StringSliceVar(&etcdServers, "etcd", []string{}, "etcd servers address")
+	pflag.StringVar(&consulServer, "consul", ":", "consul server address")
 	pflag.StringVar(&listenAddress, "listen", ":", "listen address")
 	pflag.Parse()
 }
@@ -111,35 +116,12 @@ func main() {
 		log.Println(err)
 		return
 	}
-	instance := fmt.Sprintf("%s:%d", host, port)
 
 	// 服务注册
-	var registrar sd.Registrar
-	if len(etcdServers) > 0 {
-		// etcd
-		etcdClient, err := etcdv3.NewClient(ctx, etcdServers, etcdv3.ClientOptions{})
-		if err != nil {
-			log.Println(err)
-			ln.Close()
-			return
-		}
-		registrar = etcdv3.NewRegistrar(etcdClient, etcdv3.Service{
-			Key:   serviceDirectory + "/" + instance,
-			Value: instance,
-		}, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "etcd")), zap.InfoLevel))
-	} else {
-		// mDNS
-		service := mdns.Service{
-			Instance: instance,
-			Service:  serviceDirectory,
-			Port:     port,
-		}
-		registrar, err = mdns.NewRegistrar(service, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "mDNS")), zap.InfoLevel))
-		if err != nil {
-			log.Println(err)
-			ln.Close()
-			return
-		}
+	registrar, err := newRegistrar(ctx, host, port, logger)
+	if err != nil {
+		ln.Close()
+		return
 	}
 	registrar.Register()
 	defer registrar.Deregister()
@@ -178,6 +160,59 @@ func main() {
 
 	// 等待子goroutine退出
 	wg.Wait()
+}
+
+func newRegistrar(ctx context.Context, host string, port int, logger *zap.Logger) (sd.Registrar, error) {
+	instance := fmt.Sprintf("%s:%d", host, port)
+
+	if len(etcdServers) > 0 {
+		// etcd
+		etcdClient, err := etcdv3.NewClient(ctx, etcdServers, etcdv3.ClientOptions{})
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		registrar := etcdv3.NewRegistrar(etcdClient, etcdv3.Service{
+			Key:   serviceDirectory + "/" + instance,
+			Value: instance,
+		}, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "etcd")), zap.InfoLevel))
+		return registrar, nil
+	} else if consulServer != "" {
+		// consul
+		config := consul_api.DefaultConfig()
+		config.Address = consulServer
+		c, err := consul_api.NewClient(config)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		client := consul.NewClient(c)
+		registration := &consul_api.AgentServiceRegistration{
+			Name:    serviceName,
+			ID:      serviceName + "/" + instance,
+			Address: host,
+			Port:    port,
+			Check: &consul_api.AgentServiceCheck{
+				GRPC:     instance + "/" + serviceName, // gRPC地址 + 健康检查service参数
+				Interval: "10s",                        // 必须
+			},
+		}
+		registrar := consul.NewRegistrar(client, registration,
+			kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "consul")), zap.InfoLevel))
+		return registrar, nil
+	} else {
+		// mDNS
+		service := mdns.Service{
+			Instance: instance, // unique
+			Service:  serviceDirectory,
+			Port:     port,
+		}
+		registrar, err := mdns.NewRegistrar(service, kit_zap.NewZapSugarLogger(logger.With(zap.String("sd", "mDNS")), zap.InfoLevel))
+		if err != nil {
+			return nil, err
+		}
+		return registrar, nil
+	}
 }
 
 func getOutboundIP() net.IP {

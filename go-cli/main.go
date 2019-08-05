@@ -16,7 +16,9 @@ import (
 
 	kit_log "github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/sd"
+	"github.com/go-kit/kit/sd/consul"
 	"github.com/go-kit/kit/sd/etcdv3"
+	consul_api "github.com/hashicorp/consul/api"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/wencan/kit-plugins/sd/mdns"
@@ -96,35 +98,10 @@ func main() {
 				return errors.New("protocol invalid")
 			}
 
-			// etcd参数
-			etcdServers, err := cmd.Flags().GetStringSlice("etcd")
+			// 服务发现
+			instancer, err = newInstancer(cmd)
 			if err != nil {
-				log.Println(err)
 				return err
-			}
-			if len(etcdServers) > 0 {
-				// 如果提供etcd服务器地址参数
-				// 使用etcd发现服务
-				// etcd客户端
-				connCtx, _ := context.WithTimeout(context.Background(), time.Second*10)
-				etcdClient, err := etcdv3.NewClient(connCtx, etcdServers, etcdv3.ClientOptions{})
-				if err != nil {
-					log.Println(err)
-					return err
-				}
-				instancer, err = etcdv3.NewInstancer(etcdClient, serviceDirectory, kit_log.NewLogfmtLogger(os.Stdout))
-				if err != nil {
-					log.Println(err)
-					return err
-				}
-			} else {
-				// 如果没提供etcd服务器地址参数
-				// 使用mDNS发现服务
-				instancer, err = mdns.NewInstancer(serviceDirectory, mdns.InstancerOptions{}, kit_log.NewLogfmtLogger(os.Stdout))
-				if err != nil {
-					log.Println(err)
-					return err
-				}
 			}
 
 			return nil
@@ -133,6 +110,7 @@ func main() {
 	// 全局flag
 	rootCmd.PersistentFlags().String("protocol", "grpc", "communication protocol, grpc or http")
 	rootCmd.PersistentFlags().StringSlice("etcd", []string{}, "etcd servers address")
+	rootCmd.PersistentFlags().String("consul", "", "consul server address")
 
 	// 二级cmd 具体服务
 	{
@@ -288,6 +266,58 @@ func main() {
 	}
 
 	rootCmd.Execute()
+}
+
+func newInstancer(cmd *cobra.Command) (sd.Instancer, error) {
+	// etcd参数
+	etcdServers, err := cmd.Flags().GetStringSlice("etcd")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	// consul参数
+	consulServer, err := cmd.Flags().GetString("consul")
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	if len(etcdServers) > 0 {
+		// 如果提供etcd服务器地址参数
+		// 使用etcd发现服务
+		// etcd客户端
+		connCtx, _ := context.WithTimeout(context.Background(), time.Second*10)
+		etcdClient, err := etcdv3.NewClient(connCtx, etcdServers, etcdv3.ClientOptions{})
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		instancer, err := etcdv3.NewInstancer(etcdClient, serviceDirectory, kit_log.NewLogfmtLogger(os.Stdout))
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		return instancer, nil
+	} else if consulServer != "" {
+		config := consul_api.DefaultConfig()
+		config.Address = consulServer
+		c, err := consul_api.NewClient(config)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		client := consul.NewClient(c)
+		instancer := consul.NewInstancer(client, kit_log.NewLogfmtLogger(os.Stdout), "kit-demo", nil, false)
+		return instancer, nil
+	} else {
+		// 如果没提供etcd服务器地址参数
+		// 使用mDNS发现服务
+		instancer, err := mdns.NewInstancer(serviceDirectory, mdns.InstancerOptions{}, kit_log.NewLogfmtLogger(os.Stdout))
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		return instancer, nil
+	}
 }
 
 func parseTwoInt32Flags(flags *pflag.FlagSet, name1, name2 string) (int32, int32, error) {
